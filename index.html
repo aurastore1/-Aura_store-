@@ -54,6 +54,15 @@
             background: #ff1e42;
             border-radius: 4px;
         }
+        /* iOS Safari بيعمل زوم تلقائي لو حجم خط الحقل أقل من 16px، فبنثبته 16px على الموبايل */
+        @media (hover: none) and (pointer: coarse) {
+            input, select, textarea {
+                font-size: 16px !important;
+            }
+        }
+        html {
+            -webkit-text-size-adjust: 100%;
+        }
     </style>
 </head>
 <body class="min-h-screen flex flex-col justify-between">
@@ -291,7 +300,7 @@
                         </div>
                         <div id="platformWrap">
                             <label class="block text-xs font-semibold text-gray-300 mb-1">المنصة</label>
-                            <select id="newGamePlatform" class="w-full bg-aura-darkBg border border-aura-border rounded-lg p-2.5 text-xs text-white">
+                            <select id="newGamePlatform" onchange="onCatChange()" class="w-full bg-aura-darkBg border border-aura-border rounded-lg p-2.5 text-xs text-white">
                                 <option value="both">PS4 + PS5</option>
                                 <option value="ps4">PS4 فقط</option>
                                 <option value="ps5">PS5 فقط</option>
@@ -305,6 +314,17 @@
                             <div>
                                 <label class="block text-xs font-semibold text-gray-300 mb-1">سعر Secondary (سيبه فاضي لو مش متاح)</label>
                                 <input type="number" id="priceS" placeholder="مثال: 700" class="w-full bg-aura-darkBg border border-aura-border rounded-lg p-2.5 text-xs text-white">
+                            </div>
+                        </div>
+                        <div id="variantsBothWrap" class="sm:col-span-2 space-y-3">
+                            <label class="block text-xs font-semibold text-gray-300">أسعار كل منصة (سيب الخانة فاضية لو الخيار مش متاح)</label>
+                            <div class="grid grid-cols-[auto_1fr_1fr] gap-2">
+                                <span class="text-xs font-bold text-white self-center">PS4</span>
+                                <input type="number" id="p4P" placeholder="Primary" class="w-full bg-aura-darkBg border border-aura-border rounded-lg p-2.5 text-xs text-white">
+                                <input type="number" id="p4S" placeholder="Secondary" class="w-full bg-aura-darkBg border border-aura-border rounded-lg p-2.5 text-xs text-white">
+                                <span class="text-xs font-bold text-white self-center">PS5</span>
+                                <input type="number" id="p5P" placeholder="Primary" class="w-full bg-aura-darkBg border border-aura-border rounded-lg p-2.5 text-xs text-white">
+                                <input type="number" id="p5S" placeholder="Secondary" class="w-full bg-aura-darkBg border border-aura-border rounded-lg p-2.5 text-xs text-white">
                             </div>
                         </div>
                         <div id="subsWrap" class="sm:col-span-2 hidden">
@@ -417,6 +437,38 @@
         <i class="fa-brands fa-whatsapp"></i>
     </a>
 
+    <!-- Floating TikTok -->
+    <a href="https://www.tiktok.com/@aura_store1111?_r=1&_t=ZS-9AO2mCmQbBa" target="_blank" rel="noopener" aria-label="TikTok" class="fixed bottom-6 left-24 z-40 w-14 h-14 rounded-full bg-black border border-gray-600 hover:border-aura-red text-white flex items-center justify-center text-2xl shadow-2xl transition">
+        <i class="fa-brands fa-tiktok"></i>
+    </a>
+
+    <!-- Order Review Modal -->
+    <div id="reviewOverlay" class="fixed inset-0 bg-black/85 backdrop-blur-md z-[60] hidden flex items-center justify-center p-4">
+        <div class="bg-aura-cardBg border border-aura-border w-full max-w-lg rounded-2xl p-5 shadow-2xl max-h-[90vh] flex flex-col">
+            <div class="flex items-center justify-between border-b border-aura-border pb-3 mb-4">
+                <div class="flex items-center gap-3">
+                    <i class="fa-solid fa-clipboard-check text-aura-red text-xl"></i>
+                    <h3 class="text-base font-extrabold text-white" id="reviewTitle">راجع طلبك قبل الإرسال</h3>
+                </div>
+                <button onclick="closeReview()" class="text-gray-400 hover:text-white p-1"><i class="fa-solid fa-xmark text-lg"></i></button>
+            </div>
+            <div id="reviewItems" class="space-y-3 overflow-y-auto flex-grow pl-1"></div>
+            <div class="border-t border-aura-border mt-4 pt-4 space-y-3">
+                <div id="reviewCustomer" class="text-xs text-gray-300 space-y-1 bg-aura-darkBg p-3 rounded-xl border border-aura-border"></div>
+                <div class="flex justify-between items-center">
+                    <span class="text-sm text-gray-400 font-semibold" id="reviewTotalLbl">المبلغ الإجمالي:</span>
+                    <span id="reviewTotal" class="text-xl font-black text-aura-red">EGP 0</span>
+                </div>
+                <div class="grid grid-cols-2 gap-3">
+                    <button onclick="closeReview()" id="reviewBackBtn" class="py-3 rounded-xl bg-aura-darkBg border border-aura-border hover:border-aura-red text-gray-200 font-bold text-sm transition">تعديل الطلب</button>
+                    <button onclick="confirmOrderSend()" id="reviewConfirmBtn" class="py-3 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white font-extrabold text-sm flex items-center justify-center gap-2 transition">
+                        <i class="fa-brands fa-whatsapp text-lg"></i> <span id="reviewConfirmTxt">تأكيد وإرسال</span>
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
     <!-- Toast Notification -->
     <div id="toastNotification" class="fixed bottom-6 right-6 z-50 bg-aura-cardBg border border-aura-red text-white text-xs font-bold px-4 py-3 rounded-xl shadow-2xl opacity-0 pointer-events-none transition-all duration-300 flex items-center gap-3">
         <i id="toastIcon" class="fa-solid fa-circle-check text-aura-red text-base"></i>
@@ -430,6 +482,7 @@
             <p class="text-xs text-gray-400">© 2026 Aura Store. جميع الحقوق محفوظة.</p>
             <div class="flex justify-center gap-4 text-sm text-gray-400">
                 <span><i class="fa-brands fa-whatsapp text-emerald-400"></i> 01043858175</span>
+                <a href="https://www.tiktok.com/@aura_store1111?_r=1&_t=ZS-9AO2mCmQbBa" target="_blank" rel="noopener" class="hover:text-white transition"><i class="fa-brands fa-tiktok text-white"></i> aura_store1111</a>
             </div>
         </div>
     </footer>
@@ -880,19 +933,64 @@ grid.appendChild(buildCard(game));
         }
 
         // ===================== Orders =====================
+        // الخطوة 1: تحقق من البيانات وافتح شاشة المراجعة
         function submitOrderViaWhatsApp() {
             const custName = document.getElementById('custNameInput').value.trim();
             const custPhone = document.getElementById('custPhoneInput').value.trim();
-            const paymentMethod = document.getElementById('paymentMethodSelect').value;
+            const ar = storeState.lang === 'ar';
 
             if (storeState.cart.length === 0) {
-                showToast(storeState.lang === 'ar' ? 'سلتك فارغة!' : 'Your cart is empty!');
+                showToast(ar ? 'سلتك فارغة!' : 'Your cart is empty!');
                 return;
             }
             if (!custName || !custPhone) {
-                showToast(storeState.lang === 'ar' ? 'أدخل الاسم ورقم الهاتف!' : 'Enter name & phone number!');
+                showToast(ar ? 'أدخل الاسم ورقم الهاتف!' : 'Enter name & phone number!');
                 return;
             }
+
+            const payNames = { vodafone: 'فودافون كاش', instapay: 'انستا باي', telda: 'تيلدا' };
+            const pm = document.getElementById('paymentMethodSelect').value;
+            let total = 0;
+            const box = document.getElementById('reviewItems');
+            box.innerHTML = '';
+            storeState.cart.forEach(item => {
+                const sub = item.price * item.qty;
+                total += sub;
+                const row = document.createElement('div');
+                row.className = 'flex items-center gap-3 bg-aura-darkBg p-3 rounded-xl border border-aura-border';
+                row.innerHTML = `
+                    <img src="${esc(item.image)}" class="w-16 h-16 rounded-lg object-cover bg-black flex-shrink-0">
+                    <div class="flex-grow min-w-0">
+                        <h5 class="text-xs font-bold text-white line-clamp-2">${esc(item.title)}</h5>
+                        ${item.variantLabel ? `<span class="inline-block mt-1 px-2 py-0.5 rounded bg-aura-red/20 border border-aura-red/50 text-aura-red text-[10px] font-bold">${esc(item.variantLabel)}</span>` : ''}
+                        <div class="text-[11px] text-gray-400 mt-1">EGP ${item.price} × ${item.qty}</div>
+                    </div>
+                    <span class="text-sm font-black text-yellow-400 whitespace-nowrap">EGP ${sub}</span>`;
+                box.appendChild(row);
+            });
+            document.getElementById('reviewTotal').innerText = `EGP ${total}`;
+            document.getElementById('reviewCustomer').innerHTML = `
+                <div><strong class="text-white">${ar ? 'الاسم:' : 'Name:'}</strong> ${esc(custName)}</div>
+                <div><strong class="text-white">${ar ? 'الهاتف:' : 'Phone:'}</strong> ${esc(custPhone)}</div>
+                <div><strong class="text-white">${ar ? 'الدفع:' : 'Payment:'}</strong> ${esc(payNames[pm] || pm)}</div>
+                <div><strong class="text-white">${ar ? 'إيصال التحويل:' : 'Receipt:'}</strong> ${storeState.uploadedReceiptBase64 ? (ar ? 'تم رفعه ✅' : 'Uploaded ✅') : (ar ? 'لم يُرفع ⚠️' : 'Not uploaded ⚠️')}</div>`;
+            document.getElementById('reviewTitle').innerText = ar ? 'راجع طلبك قبل الإرسال' : 'Review your order';
+            document.getElementById('reviewTotalLbl').innerText = ar ? 'المبلغ الإجمالي:' : 'Total Amount:';
+            document.getElementById('reviewBackBtn').innerText = ar ? 'تعديل الطلب' : 'Edit order';
+            document.getElementById('reviewConfirmTxt').innerText = ar ? 'تأكيد وإرسال' : 'Confirm & Send';
+            document.getElementById('reviewOverlay').classList.remove('hidden');
+        }
+
+        function closeReview() {
+            document.getElementById('reviewOverlay').classList.add('hidden');
+        }
+
+        // الخطوة 2: إرسال الطلب فعلياً بعد التأكيد
+        function confirmOrderSend() {
+            closeReview();
+            const custName = document.getElementById('custNameInput').value.trim();
+            const custPhone = document.getElementById('custPhoneInput').value.trim();
+            const paymentMethod = document.getElementById('paymentMethodSelect').value;
 
             let total = 0;
             let itemsSummary = '';
@@ -1006,7 +1104,14 @@ grid.appendChild(buildCard(game));
             const platform = document.getElementById('newGamePlatform').value;
             const inStock = document.getElementById('newGameStock').checked;
             const variants = [];
-            if (cat === 'games') {
+            if (cat === 'games' && platform === 'both') {
+                [['ps4', 'PS4', 'p4'], ['ps5', 'PS5', 'p5']].forEach(([k, group, pre]) => {
+                    const a = parseFloat(document.getElementById(pre + 'P').value);
+                    const b = parseFloat(document.getElementById(pre + 'S').value);
+                    if (!isNaN(a)) variants.push({ key: k + '_primary', group: group, label: 'Primary', price: a });
+                    if (!isNaN(b)) variants.push({ key: k + '_secondary', group: group, label: 'Secondary', price: b });
+                });
+            } else if (cat === 'games') {
                 const p1 = parseFloat(document.getElementById('priceP').value);
                 const p2 = parseFloat(document.getElementById('priceS').value);
                 if (!isNaN(p1)) variants.push({ key: 'primary', label: 'Primary', price: p1 });
@@ -1041,7 +1146,7 @@ grid.appendChild(buildCard(game));
             if (old) storeState.games[storeState.games.indexOf(old)] = newProduct;
             else storeState.games.push(newProduct);
             storeState.editingId = null;
-            ['priceP', 'priceS', 'sp1', 'ss1', 'sp3', 'ss3', 'sp12', 'ss12'].forEach(id => document.getElementById(id).value = '');
+            ['priceP', 'priceS', 'p4P', 'p4S', 'p5P', 'p5S', 'sp1', 'ss1', 'sp3', 'ss3', 'sp12', 'ss12'].forEach(id => document.getElementById(id).value = '');
             document.getElementById('newGameStock').checked = true;
             document.getElementById('newGameTrend').checked = false;
             renderGames();
@@ -1201,7 +1306,14 @@ grid.appendChild(buildCard(game));
         function getVariant(g) {
             if (!g.variants || !g.variants.length) return null;
             const k = storeState.selectedVariants[g.id];
-            return g.variants.find(v => v.key === k) || g.variants[0];
+            const sel = g.variants.find(v => v.key === k);
+            if (sel) return sel;
+            const p = storeState.currentPlatform;
+            if (p !== 'all') {
+                const byPlat = g.variants.find(v => v.group === p.toUpperCase());
+                if (byPlat) return byPlat;
+            }
+            return g.variants[0];
         }
         function priceOf(g) {
             const v = getVariant(g);
@@ -1251,7 +1363,9 @@ grid.appendChild(buildCard(game));
             const c = document.getElementById('newGameCat').value;
             document.getElementById('newGamePrice').parentElement.classList.add('hidden');
             document.getElementById('platformWrap').classList.toggle('hidden', c !== 'games');
-            document.getElementById('variantsWrap').classList.toggle('hidden', c !== 'games');
+            const both = document.getElementById('newGamePlatform').value === 'both';
+            document.getElementById('variantsWrap').classList.toggle('hidden', c !== 'games' || both);
+            document.getElementById('variantsBothWrap').classList.toggle('hidden', c !== 'games' || !both);
             document.getElementById('subsWrap').classList.toggle('hidden', c !== 'subs');
         }
         window.addEventListener('DOMContentLoaded', onCatChange);
@@ -1268,6 +1382,9 @@ grid.appendChild(buildCard(game));
             document.getElementById('newGamePlatform').value = g.platform || 'both';
             document.getElementById('priceP').value = pv ? pv.price : '';
             document.getElementById('priceS').value = sv ? sv.price : '';
+            ['p4P', 'p4S', 'p5P', 'p5S'].forEach(id => document.getElementById(id).value = '');
+            const vm = { ps4_primary: 'p4P', ps4_secondary: 'p4S', ps5_primary: 'p5P', ps5_secondary: 'p5S' };
+            (g.variants || []).forEach(v => { if (vm[v.key]) document.getElementById(vm[v.key]).value = v.price; });
 ['1', '3', '12'].forEach(d => {
                 ['sp', 'ss'].forEach(pre => document.getElementById(pre + d).value = '');
             });
