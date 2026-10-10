@@ -131,6 +131,11 @@
                     <span id="adminBtnText" class="hidden sm:inline">الأدمن</span>
                 </button>
 
+                <!-- Track Order Button -->
+                <button onclick="openTrack()" title="تتبع طلبي" aria-label="تتبع طلبي" class="p-2.5 rounded-xl bg-aura-cardBg border border-aura-border hover:border-aura-red text-white transition">
+                    <i class="fa-solid fa-truck-fast text-lg"></i>
+                </button>
+
                 <!-- Shopping Cart Button -->
                 <button onclick="toggleCartDrawer()" class="relative p-2.5 rounded-xl bg-aura-red hover:bg-aura-darkRed text-white font-bold transition neon-glow">
                     <i class="fa-solid fa-cart-shopping text-lg"></i>
@@ -154,6 +159,7 @@
                     <i class="fa-solid fa-gamepad ml-2"></i> <span id="exploreGamesBtn">تصفح المنتجات</span>
                 </a>
                 <button onclick="goTrend()" class="trend-shortcut hidden px-6 py-3.5 rounded-xl bg-yellow-500 hover:bg-yellow-400 text-black font-extrabold text-center transition">🔥 Trend Now</button>
+                <button onclick="goBest()" class="best-shortcut hidden px-6 py-3.5 rounded-xl bg-orange-500 hover:bg-orange-400 text-black font-extrabold text-center transition">⭐ Best Selling</button>
             </div>
             <div class="absolute -left-20 -bottom-20 w-80 h-80 bg-aura-red/20 rounded-full blur-3xl pointer-events-none"></div>
         </div>
@@ -166,6 +172,7 @@
             </div>
             <div class="flex items-center gap-2 overflow-x-auto w-full sm:w-auto pb-2 sm:pb-0" id="categoryTabs">
                 <button onclick="goTrend()" class="trend-shortcut hidden px-4 py-2 rounded-xl bg-yellow-500 hover:bg-yellow-400 text-black text-xs font-extrabold whitespace-nowrap transition">🔥 Trend Now</button>
+                <button onclick="goBest()" class="best-shortcut hidden px-4 py-2 rounded-xl bg-orange-500 hover:bg-orange-400 text-black text-xs font-extrabold whitespace-nowrap transition">⭐ Best Selling</button>
                 <button onclick="filterCategory('all', this)" class="cat-btn active px-4 py-2 rounded-xl bg-aura-red text-white text-xs font-bold whitespace-nowrap transition">كل المنتجات</button>
                 <button onclick="filterCategory('games', this)" class="cat-btn px-4 py-2 rounded-xl bg-aura-cardBg border border-aura-border text-gray-300 hover:border-aura-red text-xs font-bold whitespace-nowrap transition">ألعاب رقمية</button>
                 <button onclick="filterCategory('subs', this)" class="cat-btn px-4 py-2 rounded-xl bg-aura-cardBg border border-aura-border text-gray-300 hover:border-aura-red text-xs font-bold whitespace-nowrap transition">اشتراكات</button>
@@ -178,10 +185,10 @@
         <!-- Trend Now -->
         <div id="trendSection" class="hidden mb-10 scroll-mt-24">
             <div class="flex items-center justify-between mb-6">
-                <h3 class="text-xl sm:text-2xl font-extrabold flex items-center gap-3">
+                <h3 id="trendTitle" class="text-xl sm:text-2xl font-extrabold flex items-center gap-3">
                     <i class="fa-solid fa-bolt text-yellow-400"></i> Trend Now
                 </h3>
-                <button onclick="goTrend()" aria-label="رجوع لكل المنتجات" class="w-9 h-9 rounded-xl bg-aura-cardBg border border-aura-border hover:border-aura-red text-gray-300 flex items-center justify-center transition"><i class="fa-solid fa-xmark"></i></button>
+                <button onclick="closeList()" aria-label="رجوع لكل المنتجات" class="w-9 h-9 rounded-xl bg-aura-cardBg border border-aura-border hover:border-aura-red text-gray-300 flex items-center justify-center transition"><i class="fa-solid fa-xmark"></i></button>
             </div>
             <div id="trendGrid" class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-3 sm:gap-6"></div>
         </div>
@@ -262,7 +269,7 @@
                     </div>
 
                     <div>
-                        <label class="block text-xs font-bold text-gray-300 mb-1" id="lblUploadReceipt">صورة التحويل / السكرين شوت</label>
+                        <label class="block text-xs font-bold text-gray-300 mb-1" id="lblUploadReceipt">صورة التحويل / السكرين شوت <span class="text-aura-red">*</span></label>
                         <input type="file" id="receiptFileInput" accept="image/*" onchange="previewReceiptImage(event)" class="w-full bg-aura-darkBg text-xs text-gray-400 border border-aura-border rounded-lg p-2 file:ml-3 file:py-1 file:px-2 file:rounded file:border-0 file:text-xs file:bg-aura-red file:text-white hover:file:bg-aura-darkRed">
                         <div id="receiptPreviewBox" class="hidden mt-2 relative w-full h-24 bg-black rounded border border-aura-border overflow-hidden">
                             <img id="receiptPreviewImg" src="" class="w-full h-full object-contain">
@@ -295,8 +302,7 @@
             <div id="adminLoginForm" class="py-8 space-y-4 max-w-sm mx-auto text-center">
                 <i class="fa-solid fa-lock text-4xl text-aura-red mb-2"></i>
                 <h4 class="text-lg font-bold text-white">أدخل كلمة سر الأدمن</h4>
-                <p class="text-xs text-gray-400">كلمة السر الافتراضية: <code class="text-yellow-400 font-mono">admin123</code></p>
-                <input type="password" id="adminPassInput" placeholder="كلمة السر..." class="w-full bg-aura-darkBg border border-aura-border rounded-xl p-3 text-center text-sm font-mono text-white focus:border-aura-red focus:outline-none">
+                <input type="password" id="adminPassInput" placeholder="كلمة السر..." onkeydown="if(event.key==='Enter')authenticateAdmin()" class="w-full bg-aura-darkBg border border-aura-border rounded-xl p-3 text-center text-sm font-mono text-white focus:border-aura-red focus:outline-none">
                 <button onclick="authenticateAdmin()" class="w-full py-3 bg-aura-red hover:bg-aura-darkRed text-white font-bold rounded-xl transition">
                     دخول لوحة التحكم
                 </button>
@@ -307,7 +313,7 @@
                 <div class="flex flex-wrap gap-2 border-b border-aura-border pb-3">
                     <button onclick="switchAdminTab('addGame', this)" class="admin-tab-btn active px-4 py-2 bg-aura-red text-white text-xs font-bold rounded-lg">إضافة منتج جديد</button>
                     <button onclick="switchAdminTab('manageGames', this)" class="admin-tab-btn px-4 py-2 bg-aura-darkBg border border-aura-border text-gray-300 text-xs font-bold rounded-lg">تعديل الأسعار والمنتجات</button>
-                    <button onclick="switchAdminTab('viewOrders', this)" class="admin-tab-btn px-4 py-2 bg-aura-darkBg border border-aura-border text-gray-300 text-xs font-bold rounded-lg">الطلبات الواردة</button>
+                    <button onclick="switchAdminTab('viewOrders', this)" class="admin-tab-btn px-4 py-2 bg-aura-darkBg border border-aura-border text-gray-300 text-xs font-bold rounded-lg">الطلبات الواردة <span id="ordersBadge" class="hidden mr-1 px-1.5 py-0.5 rounded-full bg-aura-red text-white text-[10px] font-black">0</span></button>
                     <button onclick="switchAdminTab('securitySettings', this)" class="admin-tab-btn px-4 py-2 bg-aura-darkBg border border-aura-border text-yellow-400 text-xs font-bold rounded-lg">كلمة السر</button>
                     <button onclick="switchAdminTab('cloudSyncTab', this)" class="admin-tab-btn px-4 py-2 bg-aura-darkBg border border-aura-border text-emerald-400 text-xs font-bold rounded-lg">حالة المزامنة السحابية</button>
                 </div>
@@ -380,6 +386,12 @@
                         <label class="flex items-center gap-2 text-xs text-yellow-400 sm:col-span-2">
                             <input type="checkbox" id="newGameTrend"> 🔥 ضيفه في قائمة Trend Now
                         </label>
+                        <label class="flex items-center gap-2 text-xs text-orange-400 sm:col-span-2">
+                            <input type="checkbox" id="newGameBest"> ⭐ ضيفه في قائمة Best Selling (الأكثر مبيعاً)
+                        </label>
+                        <p class="sm:col-span-2 text-[11px] text-emerald-400 bg-emerald-950/30 border border-emerald-500/30 rounded-lg p-2.5 leading-relaxed">
+                            💡 <b>الخصم:</b> في كل خانة سعر فوق، الخانة الأولى = السعر اللي الزبون هيدفعه (بعد الخصم)، والخانة اللي تحتها (اختياري) = السعر الأصلي قبل الخصم. هيظهر مشطوب جنب السعر ومعاه شارة نسبة الخصم.
+                        </p>
                         <div>
                             <label class="block text-xs font-semibold text-gray-300 mb-1">صورة المنتج</label>
                             <input type="file" id="newGameImgFile" accept="image/*" onchange="handleGameImageUpload(event)" class="w-full bg-aura-darkBg text-xs text-gray-400 border border-aura-border rounded-lg p-1.5">
@@ -502,7 +514,36 @@
         </div>
     </div>
 
+    <!-- Track Order -->
+    <div id="trackOverlay" class="fixed inset-0 bg-black/85 backdrop-blur-md z-[65] hidden flex items-center justify-center p-4">
+        <div class="bg-aura-cardBg border border-aura-border w-full max-w-lg rounded-2xl p-5 shadow-2xl max-h-[90vh] flex flex-col">
+            <div class="flex items-center justify-between border-b border-aura-border pb-3 mb-4">
+                <div class="flex items-center gap-3">
+                    <i class="fa-solid fa-truck-fast text-aura-red text-xl"></i>
+                    <h3 id="trackTitle" class="text-base font-extrabold text-white">تتبع طلبك</h3>
+                </div>
+                <button onclick="closeTrack()" class="text-gray-400 hover:text-white p-1"><i class="fa-solid fa-xmark text-lg"></i></button>
+            </div>
+            <div class="flex gap-2 mb-3">
+                <input type="text" id="trackInput" onkeydown="if(event.key==='Enter')trackSearch()" placeholder="رقم الطلب أو رقم الموبايل" class="flex-grow min-w-0 bg-aura-darkBg border border-aura-border rounded-xl p-3 text-sm text-white focus:border-aura-red focus:outline-none">
+                <button onclick="trackSearch()" id="trackBtn" class="px-4 rounded-xl bg-aura-red hover:bg-aura-darkRed text-white font-bold text-sm transition">بحث</button>
+            </div>
+            <div id="trackRecent" class="mb-3"></div>
+            <div id="trackResult" class="space-y-3 overflow-y-auto flex-grow"></div>
+        </div>
+    </div>
+
     <!-- Toast Notification -->
+    <!-- Alert banner (إشعارات الطلبات) -->
+    <div id="alertBanner" onclick="alertBannerClick()" class="fixed top-4 left-1/2 -translate-x-1/2 -translate-y-6 z-[150] w-[92%] max-w-md bg-aura-cardBg border-2 border-aura-red rounded-2xl shadow-2xl p-4 flex items-start gap-3 opacity-0 pointer-events-none transition-all duration-500 cursor-pointer">
+        <span id="alertIcon" class="text-2xl leading-none">🔔</span>
+        <div class="flex-grow min-w-0">
+            <div id="alertTitle" class="text-sm font-extrabold text-white"></div>
+            <div id="alertBody" class="text-xs text-gray-300 mt-1 break-words whitespace-pre-line"></div>
+        </div>
+        <button onclick="event.stopPropagation(); hideAlertBanner()" aria-label="إغلاق" class="text-gray-400 hover:text-white"><i class="fa-solid fa-xmark"></i></button>
+    </div>
+
     <div id="toastNotification" class="fixed bottom-6 right-6 z-50 bg-aura-cardBg border border-aura-red text-white text-xs font-bold px-4 py-3 rounded-xl shadow-2xl opacity-0 pointer-events-none transition-all duration-300 flex items-center gap-3">
         <i id="toastIcon" class="fa-solid fa-circle-check text-aura-red text-base"></i>
         <span id="toastMessage">إشعار</span>
@@ -543,7 +584,6 @@
             games: defaultGamesList,
             cart: [],
             orders: [],
-            adminPassword: 'admin123',
             currentCategory: 'all',
             currentPlatform: 'all',
             selectedVariants: {},
@@ -551,7 +591,8 @@
             searchQuery: '',
             uploadedReceiptBase64: '',
             uploadedNewGameImgBase64: '',
-            lastUpdatedTimestamp: 0
+            lastUpdatedTimestamp: 0,
+            adminPassword: 'admin123'
         };
 
         const translations = {
@@ -568,7 +609,7 @@
                 custNameLbl: 'الاسم الكامل',
                 custPhoneLbl: 'رقم الهاتف',
                 paymentMethodLbl: 'طريقة الدفع',
-                uploadReceiptLbl: 'صورة التحويل / السكرين شوت',
+                uploadReceiptLbl: 'صورة التحويل / السكرين شوت (إجباري) *',
                 sendOrderBtn: 'إرسال الطلب عبر الواتساب',
                 addToCart: 'إضافة للسلة',
                 copy: 'نسخ',
@@ -587,7 +628,7 @@
                 custNameLbl: 'Your Full Name',
                 custPhoneLbl: 'Phone Number',
                 paymentMethodLbl: 'Payment Method',
-                uploadReceiptLbl: 'Upload Payment Screenshot',
+                uploadReceiptLbl: 'Upload Payment Screenshot (required) *',
                 sendOrderBtn: 'Send Order via WhatsApp',
                 addToCart: 'Add to Cart',
                 copy: 'Copy',
@@ -597,9 +638,12 @@
 
         window.addEventListener('DOMContentLoaded', () => {
             loadLocalState();
+            loadCart();
+            loadCustomer();
             renderGames();
             updateLanguageUI();
             updatePaymentDetailsDisplay();
+            updateCartUI();
 
             // Initial Cloud Fetch & polling
             const hdrLogo = document.querySelector('header img');
@@ -609,6 +653,8 @@
             setTimeout(finishCloudProgress, 15000);
             fetchCloudState();
             setInterval(() => fetchCloudState(), 4000);
+            checkMyOrders();
+            setInterval(checkMyOrders, 20000);
         });
 
         // ===================== Cloud loading progress (0 → 100) =====================
@@ -696,8 +742,9 @@
                 }
                 if (force || meta.updatedAt !== storeState.lastUpdatedTimestamp) {
                     const g = (gamesPromise && await gamesPromise) || await dbGet('games');
-                    storeState.games = Array.isArray(g) ? g.filter(Boolean) : Object.values(g || {});
                     if (meta.adminPassword) storeState.adminPassword = meta.adminPassword;
+                    storeState.games = Array.isArray(g) ? g.filter(Boolean) : Object.values(g || {});
+                    reconcileCart();
                     storeState.lastUpdatedTimestamp = meta.updatedAt;
                     saveLocalState();
                     renderGames();
@@ -815,6 +862,7 @@
             card.className = "bg-aura-cardBg border border-aura-border rounded-2xl overflow-hidden hover:border-aura-red/60 transition duration-300 flex flex-col justify-between group shadow-lg";
             card.innerHTML = `
                 <div class="relative aspect-square bg-black overflow-hidden">
+                    ${hasDisc(game) ? `<span class="absolute top-3 right-3 z-10 px-2 py-1 bg-emerald-500 text-black text-[10px] font-black rounded-lg">-${discPct(game)}%</span>` : ''}
                     <img src="${game.image}" alt="${game.title}" class="w-full h-full object-cover object-center group-hover:scale-105 transition duration-500" loading="lazy" decoding="async">
                     <span class="absolute top-3 left-3 px-2.5 py-1 bg-black/80 backdrop-blur-md border border-aura-border text-[10px] font-bold uppercase tracking-wider text-aura-red rounded-lg">
                         ${catLabel(game)}
@@ -828,7 +876,10 @@
                     <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2 pt-2 border-t border-aura-border/60">
                         <div>
                             <span class="text-[10px] text-gray-400 block">${storeState.lang === 'ar' ? 'السعر' : 'Price'}</span>
-                            <span class="text-base sm:text-lg font-black text-white">EGP ${priceOf(game)}</span>
+                            <div class="flex items-baseline gap-1.5 flex-wrap">
+                                <span class="text-base sm:text-lg font-black text-white">EGP ${priceOf(game)}</span>
+                                ${hasDisc(game) ? `<span class="text-[11px] text-gray-500 line-through">EGP ${origPriceOf(game)}</span>` : ''}
+                            </div>
                         </div>
                         <button onclick="addToCart('${game.id}')" ${game.inStock === false ? 'disabled' : ''} class="w-full sm:w-auto justify-center px-3 sm:px-3.5 py-2 bg-aura-red hover:bg-aura-darkRed text-white font-bold text-xs rounded-xl transition flex items-center gap-1.5 neon-glow ${game.inStock === false ? 'opacity-40 pointer-events-none' : ''}">
                             <i class="fa-solid fa-cart-plus"></i>
@@ -860,8 +911,14 @@
                 b.classList.toggle('text-gray-300', !on);
             });
         }
-        function enterTrend() {
-            if (!hasTrend()) return;
+        let listKind = 'trend'; // 'trend' أو 'best'
+        function hasList(kind) {
+            const k = kind === 'best' ? 'bestSeller' : 'trending';
+            return storeState.games.some(g => g[k] && g.category !== 'cards');
+        }
+        function enterList(kind) {
+            if (!hasList(kind)) return;
+            listKind = kind;
             trendMode = true;
             document.getElementById('searchInput').value = '';
             storeState.searchQuery = '';
@@ -869,15 +926,18 @@
             renderGamesSmooth();
             setTimeout(() => smoothScrollTo('trendSection'), 260);
         }
-        function goTrend() {
-            if (trendMode) {
-                trendMode = false;
-                renderGamesSmooth();
-                setTimeout(() => smoothScrollTo('gamesSection'), 260);
-            } else {
-                enterTrend();
-            }
+        function enterTrend() { enterList('trend'); }
+        function closeList() {
+            trendMode = false;
+            renderGamesSmooth();
+            setTimeout(() => smoothScrollTo('gamesSection'), 260);
         }
+        function goList(kind) {
+            if (trendMode && listKind === kind) closeList();
+            else enterList(kind);
+        }
+        function goTrend() { goList('trend'); }
+        function goBest() { goList('best'); }
 
         // ===================== تمرير ناعم =====================
         // بيبدأ بطيء، يسرّع في النص، ويهدّى في الآخر (easeInOutCubic) بدل القفزة المفاجئة
@@ -1009,16 +1069,24 @@
         function renderTrend() {
             const sec = document.getElementById('trendSection');
             const tg = document.getElementById('trendGrid');
-            const list = storeState.games.filter(g => g.trending && g.category !== 'cards');
+            const key = listKind === 'best' ? 'bestSeller' : 'trending';
+            const list = storeState.games.filter(g => g[key] && g.category !== 'cards');
             if (!list.length) trendMode = false;
             const show = trendMode;
             sec.classList.toggle('hidden', !show);
             document.getElementById('gamesSection').classList.toggle('hidden', show);
-            document.querySelectorAll('.trend-shortcut').forEach(b => {
-                b.classList.toggle('hidden', !list.length);
-                b.classList.toggle('ring-2', show);
-                b.classList.toggle('ring-white', show);
+            [['trend', '.trend-shortcut'], ['best', '.best-shortcut']].forEach(([kind, sel]) => {
+                const has = hasList(kind);
+                const on = show && listKind === kind;
+                document.querySelectorAll(sel).forEach(b => {
+                    b.classList.toggle('hidden', !has);
+                    b.classList.toggle('ring-2', on);
+                    b.classList.toggle('ring-white', on);
+                });
             });
+            document.getElementById('trendTitle').innerHTML = listKind === 'best'
+                ? '<i class="fa-solid fa-trophy text-yellow-400"></i> Best Selling'
+                : '<i class="fa-solid fa-bolt text-yellow-400"></i> Trend Now';
             tg.innerHTML = '';
             if (show) list.forEach(g => tg.appendChild(buildCard(g)));
         }
@@ -1124,6 +1192,7 @@ grid.appendChild(buildCard(game));
         }
 
         function updateCartUI() {
+            saveCart();
             const cartList = document.getElementById('cartItemsList');
             cartList.innerHTML = '';
 
@@ -1228,7 +1297,7 @@ grid.appendChild(buildCard(game));
             const file = event.target.files[0];
             if (!file) return;
 
-            compressAndResizeImage(file, 500, 0.6, (compressedImg) => {
+            compressAndResizeImage(file, 1000, 0.8, (compressedImg) => {
                 storeState.uploadedReceiptBase64 = compressedImg;
                 document.getElementById('receiptPreviewImg').src = compressedImg;
                 document.getElementById('receiptPreviewBox').classList.remove('hidden');
@@ -1236,6 +1305,18 @@ grid.appendChild(buildCard(game));
         }
 
         // ===================== Orders =====================
+        // صورة إيصال الدفع إجبارية: من غير ما تترفع مفيش تأكيد للطلب
+        function requireReceipt() {
+            if (storeState.uploadedReceiptBase64) return true;
+            const ar = storeState.lang === 'ar';
+            showToast(ar ? 'لازم ترفع صورة إيصال الدفع الأول!' : 'Please upload your payment receipt first!');
+            const inp = document.getElementById('receiptFileInput');
+            inp.scrollIntoView({ behavior: 'smooth', block: 'center' });
+            inp.classList.add('ring-2', 'ring-red-500', 'border-red-500');
+            setTimeout(() => inp.classList.remove('ring-2', 'ring-red-500', 'border-red-500'), 2500);
+            return false;
+        }
+
         // الخطوة 1: تحقق من البيانات وافتح شاشة المراجعة
         function submitOrderViaWhatsApp() {
             const custName = document.getElementById('custNameInput').value.trim();
@@ -1250,6 +1331,7 @@ grid.appendChild(buildCard(game));
                 showToast(ar ? 'أدخل الاسم ورقم الهاتف!' : 'Enter name & phone number!');
                 return;
             }
+            if (!requireReceipt()) return;
 
             const payNames = { vodafone: 'فودافون كاش', instapay: 'انستا باي', telda: 'تيلدا' };
             const pm = document.getElementById('paymentMethodSelect').value;
@@ -1276,7 +1358,8 @@ grid.appendChild(buildCard(game));
                 <div><strong class="text-white">${ar ? 'الاسم:' : 'Name:'}</strong> ${esc(custName)}</div>
                 <div><strong class="text-white">${ar ? 'الهاتف:' : 'Phone:'}</strong> ${esc(custPhone)}</div>
                 <div><strong class="text-white">${ar ? 'الدفع:' : 'Payment:'}</strong> ${esc(payNames[pm] || pm)}</div>
-                <div><strong class="text-white">${ar ? 'إيصال التحويل:' : 'Receipt:'}</strong> ${storeState.uploadedReceiptBase64 ? (ar ? 'تم رفعه ✅' : 'Uploaded ✅') : (ar ? 'لم يُرفع ⚠️' : 'Not uploaded ⚠️')}</div>`;
+                <div><strong class="text-white">${ar ? 'إيصال التحويل:' : 'Receipt:'}</strong> ${ar ? 'تم رفعه ✅' : 'Uploaded ✅'}</div>
+                <img src="${storeState.uploadedReceiptBase64}" class="mt-2 w-full max-h-40 object-contain rounded-lg border border-aura-border bg-black">`;
             document.getElementById('reviewTitle').innerText = ar ? 'راجع طلبك قبل الإرسال' : 'Review your order';
             document.getElementById('reviewTotalLbl').innerText = ar ? 'المبلغ الإجمالي:' : 'Total Amount:';
             document.getElementById('reviewBackBtn').innerText = ar ? 'تعديل الطلب' : 'Edit order';
@@ -1288,9 +1371,11 @@ grid.appendChild(buildCard(game));
             document.getElementById('reviewOverlay').classList.add('hidden');
         }
 
-        // الخطوة 2: إرسال الطلب فعلياً بعد التأكيد
+        // الخطوة 2: إرسال الطلب فعلياً بعد التأكيد (الإيصال إجباري ومحفوظ في لوحة الأدمن)
         function confirmOrderSend() {
             closeReview();
+            if (!requireReceipt()) return; // حماية إضافية: مفيش طلب من غير إيصال
+
             const custName = document.getElementById('custNameInput').value.trim();
             const custPhone = document.getElementById('custPhoneInput').value.trim();
             const paymentMethod = document.getElementById('paymentMethodSelect').value;
@@ -1304,10 +1389,11 @@ grid.appendChild(buildCard(game));
             });
 
             const newOrder = {
-                id: 'ORD-' + Date.now(),
+                id: 'AU-' + Date.now().toString(36).toUpperCase().slice(-5) + Math.random().toString(36).slice(2, 6).toUpperCase(),
                 ts: Date.now(),
                 customerName: custName,
                 customerPhone: custPhone,
+                phoneKey: normPhone(custPhone),
                 items: storeState.cart.map(i => ({ id: i.id, title: i.title, price: i.price, variantLabel: i.variantLabel || '', qty: i.qty })),
                 total: total,
                 paymentMethod: paymentMethod,
@@ -1318,6 +1404,8 @@ grid.appendChild(buildCard(game));
 
             // كل طلب بيتحفظ لوحده في السحابة (مفيش طلب بيمسح طلب تاني)
             dbPut('orders/' + newOrder.id, newOrder).catch(e => console.warn('Order save failed:', e));
+            trackMyOrder(newOrder.id);
+            rememberOrder(newOrder);
 
             let msg = `🛒 *طلب جديد - AURA STORE*\n`;
             msg += `---------------------------\n`;
@@ -1331,7 +1419,8 @@ grid.appendChild(buildCard(game));
             msg += `📌 إيصال التحويل محفوظ في لوحة أدمن Aura Store.`;
 
             const encodedMsg = encodeURIComponent(msg);
-            window.open(`https://wa.me/${WHATSAPP_NUMBER}?text=${encodedMsg}`, '_blank');
+            const waUrl = `https://wa.me/${WHATSAPP_NUMBER}?text=${encodedMsg}`;
+            window.open(waUrl, '_blank');
 
             storeState.cart = [];
             storeState.uploadedReceiptBase64 = '';
@@ -1356,8 +1445,10 @@ grid.appendChild(buildCard(game));
             if (inputPass === storeState.adminPassword) {
                 document.getElementById('adminLoginForm').classList.add('hidden');
                 document.getElementById('adminDashboardContent').classList.remove('hidden');
+                document.getElementById('adminPassInput').value = '';
                 renderAdminGamesTable();
                 renderAdminOrders();
+                startAdminOrderWatch();
                 showToast(storeState.lang === 'ar' ? 'أهلاً بك في لوحة التحكم!' : 'Welcome Admin!');
             } else {
                 showToast(storeState.lang === 'ar' ? 'كلمة السر غير صحيحة!' : 'Wrong Password!');
@@ -1371,6 +1462,7 @@ grid.appendChild(buildCard(game));
                 b.classList.add('bg-aura-darkBg', 'text-gray-300');
             });
 
+            if (tabId === 'viewOrders') clearOrdersBadge();
             if (tabId === 'addGame') document.getElementById('tabAddGame').classList.remove('hidden');
             if (tabId === 'manageGames') {
                 document.getElementById('tabManageGames').classList.remove('hidden');
@@ -1411,19 +1503,19 @@ grid.appendChild(buildCard(game));
                 [['ps4', 'PS4', 'p4'], ['ps5', 'PS5', 'p5']].forEach(([k, group, pre]) => {
                     const a = parseFloat(document.getElementById(pre + 'P').value);
                     const b = parseFloat(document.getElementById(pre + 'S').value);
-                    if (!isNaN(a)) variants.push({ key: k + '_primary', group: group, label: 'Primary', price: a });
-                    if (!isNaN(b)) variants.push({ key: k + '_secondary', group: group, label: 'Secondary', price: b });
+                    if (!isNaN(a)) variants.push({ key: k + '_primary', group: group, label: 'Primary', price: a, ...oldOf(pre + 'P', a) });
+                    if (!isNaN(b)) variants.push({ key: k + '_secondary', group: group, label: 'Secondary', price: b, ...oldOf(pre + 'S', b) });
                 });
             } else if (cat === 'games') {
                 const p1 = parseFloat(document.getElementById('priceP').value);
                 const p2 = parseFloat(document.getElementById('priceS').value);
-                if (!isNaN(p1)) variants.push({ key: 'primary', label: 'Primary', price: p1 });
-                if (!isNaN(p2)) variants.push({ key: 'secondary', label: 'Secondary', price: p2 });
+                if (!isNaN(p1)) variants.push({ key: 'primary', label: 'Primary', price: p1, ...oldOf('priceP', p1) });
+                if (!isNaN(p2)) variants.push({ key: 'secondary', label: 'Secondary', price: p2, ...oldOf('priceS', p2) });
             } else if (cat === 'subs') {
                 [['1', 'شهر'], ['3', '3 شهور'], ['12', 'سنة']].forEach(([d, label]) => {
                     [['sp', 'Primary', 'p'], ['ss', 'Secondary', 's']].forEach(([pre, group, k]) => {
                         const pr = parseFloat(document.getElementById(pre + d).value);
-                        if (!isNaN(pr)) variants.push({ key: k + d, group: group, label: label, price: pr });
+                        if (!isNaN(pr)) variants.push({ key: k + d, group: group, label: label, price: pr, ...oldOf(pre + d, pr) });
                     });
                 });
             }
@@ -1442,6 +1534,7 @@ grid.appendChild(buildCard(game));
                 image: storeState.uploadedNewGameImgBase64 || (old && old.image) || img,
                 inStock: inStock,
                 trending: document.getElementById('newGameTrend').checked,
+                bestSeller: document.getElementById('newGameBest').checked,
                 variants: variants,
                 platform: cat === 'games' ? platform : ''
             };
@@ -1449,9 +1542,10 @@ grid.appendChild(buildCard(game));
             if (old) storeState.games[storeState.games.indexOf(old)] = newProduct;
             else storeState.games.push(newProduct);
             storeState.editingId = null;
-            ['priceP', 'priceS', 'p4P', 'p4S', 'p5P', 'p5S', 'sp1', 'ss1', 'sp3', 'ss3', 'sp12', 'ss12'].forEach(id => document.getElementById(id).value = '');
+            PRICE_IDS.forEach(id => { document.getElementById(id).value = ''; document.getElementById(id + '_old').value = ''; });
             document.getElementById('newGameStock').checked = true;
             document.getElementById('newGameTrend').checked = false;
+            document.getElementById('newGameBest').checked = false;
             renderGames();
             await syncCloudAndSave();
 
@@ -1484,6 +1578,7 @@ grid.appendChild(buildCard(game));
                         <button onclick="editGame('${game.id}')" class="px-2.5 py-1 bg-blue-600/80 hover:bg-blue-600 text-white rounded text-xs font-bold transition"><i class="fa-solid fa-pen"></i> تعديل</button>
                         <button onclick="toggleStock('${game.id}')" class="px-2.5 py-1 ${game.inStock === false ? 'bg-gray-600' : 'bg-emerald-600/80'} text-white rounded text-xs font-bold transition">${game.inStock === false ? 'نفذت' : 'متوفر'}</button>
                         <button onclick="toggleTrend('${game.id}')" class="px-2.5 py-1 ${game.trending ? 'bg-yellow-500 text-black' : 'bg-aura-darkBg border border-aura-border text-gray-300'} rounded text-xs font-bold transition">🔥</button>
+                        <button onclick="toggleBest('${game.id}')" title="Best Selling" class="px-2.5 py-1 ${game.bestSeller ? 'bg-orange-500 text-black' : 'bg-aura-darkBg border border-aura-border text-gray-300'} rounded text-xs font-bold transition">⭐</button>
                         <button onclick="moveGame('${game.id}','top')" title="أول القائمة" class="px-2 py-1 bg-aura-darkBg border border-aura-border text-white rounded text-xs font-bold">⏫</button>
                         <button onclick="moveGame('${game.id}','up')" title="فوق" class="px-2 py-1 bg-aura-darkBg border border-aura-border text-white rounded text-xs font-bold">▲</button>
                         <button onclick="moveGame('${game.id}','down')" title="تحت" class="px-2 py-1 bg-aura-darkBg border border-aura-border text-white rounded text-xs font-bold">▼</button>
@@ -1531,13 +1626,16 @@ grid.appendChild(buildCard(game));
                 return;
             }
 
-            storeState.orders.forEach(ord => {
+            const SAFE_ID = /^(ORD-\d+(-[a-z0-9]+)?|AU-[A-Z0-9]{6,12})$/;
+            storeState.orders.filter(o => o && SAFE_ID.test(String(o.id))).forEach(ord => {
                 const box = document.createElement('div');
-                box.className = "bg-aura-darkBg border border-aura-border p-4 rounded-xl space-y-3";
+                box.className = "bg-aura-darkBg border " + (ord.status === 'rejected' ? 'border-red-500/70' : 'border-aura-border') + " p-4 rounded-xl space-y-3";
                 const itemsList = (ord.items || []).map(i => `${esc(i.title)}${i.variantLabel ? ' [' + esc(i.variantLabel) + ']' : ''} (x${esc(i.qty)})`).join(', ');
                 const st = ord.status || 'new';
                 const statusSelect = `<select onchange="updateOrderStatus('${esc(ord.id)}', this.value)" class="bg-aura-cardBg border border-aura-border rounded p-1 text-xs text-white">
                     <option value="new" ${st === 'new' ? 'selected' : ''}>🆕 جديد</option>
+                    <option value="accepted" ${st === 'accepted' ? 'selected' : ''}>👍 مقبول (جاري التنفيذ)</option>
+                    <option value="rejected" ${st === 'rejected' ? 'selected' : ''}>⛔ مرفوض</option>
                     <option value="delivered" ${st === 'delivered' ? 'selected' : ''}>✅ تم التسليم</option>
                     <option value="canceled" ${st === 'canceled' ? 'selected' : ''}>❌ ملغي</option>
                 </select>`;
@@ -1545,16 +1643,21 @@ grid.appendChild(buildCard(game));
                 box.innerHTML = `
                     <div class="flex justify-between items-start border-b border-aura-border/60 pb-2">
                         <div>
-                            <span class="text-xs font-mono text-aura-red font-bold">${ord.id}</span>
+                            <span class="text-xs font-mono text-aura-red font-bold">${esc(ord.id)}</span>
                             <h5 class="text-sm font-bold text-white">${esc(ord.customerName)} (${esc(ord.customerPhone)})</h5>
                             <div class="mt-1">${statusSelect}</div>
-                            <span class="text-[10px] text-gray-400">${ord.date}</span>
+                            <span class="text-[10px] text-gray-400">${esc(ord.date)}</span>
                         </div>
-                        <span class="text-sm font-black text-yellow-400">EGP ${ord.total}</span>
+                        <span class="text-sm font-black text-yellow-400">EGP ${esc(ord.total)}</span>
                     </div>
                     <p class="text-xs text-gray-300"><strong class="text-white">المنتجات:</strong> ${itemsList}</p>
-                    <p class="text-xs text-gray-300"><strong class="text-white">طريقة الدفع:</strong> ${ord.paymentMethod}</p>
-                    ${ord.receiptImg ? `
+                    <p class="text-xs text-gray-300"><strong class="text-white">طريقة الدفع:</strong> ${esc(ord.paymentMethod)}</p>
+                    ${ord.status === 'rejected' ? `<p class="text-xs text-red-400 font-bold">⛔ مرفوض${ord.rejectReason ? ' - السبب: ' + esc(ord.rejectReason) : ''}</p>` : ''}
+                    <div class="flex gap-2">
+                        <button onclick="acceptOrder('${esc(ord.id)}')" class="px-3 py-1.5 rounded-lg bg-emerald-600/80 hover:bg-emerald-600 text-white text-xs font-bold transition">👍 قبول</button>
+                        <button onclick="rejectOrder('${esc(ord.id)}')" class="px-3 py-1.5 rounded-lg bg-red-600/80 hover:bg-red-600 text-white text-xs font-bold transition">⛔ رفض الطلب</button>
+                    </div>
+                    ${/^data:image\/[a-z+.-]+;base64,[A-Za-z0-9+\/=]+$/.test(ord.receiptImg || '') ? `
                         <div>
                             <span class="text-[10px] font-bold text-gray-400 block mb-1">صورة إيصال التحويل:</span>
                             <img src="${ord.receiptImg}" class="max-h-40 rounded border border-aura-border object-contain">
@@ -1618,9 +1721,56 @@ grid.appendChild(buildCard(game));
             }
             return g.variants[0];
         }
-        function priceOf(g) {
+        const PRICE_IDS = ['priceP', 'priceS', 'p4P', 'p4S', 'p5P', 'p5S', 'sp1', 'ss1', 'sp3', 'ss3', 'sp12', 'ss12'];
+        function oldOf(id, price) {
+            const o = parseFloat(document.getElementById(id + '_old').value);
+            return o > price ? { oldPrice: o } : {};
+        }
+        // بيحط تحت كل خانة سعر خانة تانية للسعر قبل الخصم
+        window.addEventListener('DOMContentLoaded', () => {
+            PRICE_IDS.forEach(id => {
+                const inp = document.getElementById(id);
+                if (!inp) return;
+                const wrap = document.createElement('div');
+                wrap.className = 'flex flex-col gap-1 min-w-0';
+                inp.parentNode.insertBefore(wrap, inp);
+                wrap.appendChild(inp);
+                const old = inp.cloneNode(false);
+                old.id = id + '_old';
+                old.value = '';
+                old.placeholder = 'السعر قبل الخصم (اختياري)';
+                old.classList.add('text-gray-400');
+                wrap.appendChild(old);
+            });
+        });
+
+        function discOf(g) {
+            const d = parseFloat(g.discount);
+            return d > 0 && d < 100 ? d : 0;
+        }
+        // السعر اللي الزبون بيدفعه. oldPrice = السعر قبل الخصم (بتكتبه بنفسك). نسبة الخصم القديمة لسه مدعومة للمنتجات اللي اتحفظت بيها
+        function priceForVariant(g, v) {
+            const base = v ? v.price : g.price;
+            const manual = v ? v.oldPrice : g.oldPrice;
+            if (manual > base) return base;
+            const d = discOf(g);
+            return d ? Math.round(base * (1 - d / 100)) : base;
+        }
+        function origPriceOf(g) {
             const v = getVariant(g);
-            return v ? v.price : g.price;
+            const base = v ? v.price : g.price;
+            const manual = v ? v.oldPrice : g.oldPrice;
+            if (manual > base) return manual;
+            return discOf(g) ? base : 0;
+        }
+        function priceOf(g) {
+            return priceForVariant(g, getVariant(g));
+        }
+        function hasDisc(g) {
+            return origPriceOf(g) > priceOf(g);
+        }
+        function discPct(g) {
+            return Math.round((1 - priceOf(g) / origPriceOf(g)) * 100);
         }
         function variantChips(g) {
             if (!g.variants || !g.variants.length) return '';
@@ -1660,7 +1810,7 @@ grid.appendChild(buildCard(game));
             renderGamesSmooth();
         }
         function priceCell(g) {
-            if (g.variants && g.variants.length) return g.variants.map(v => `${v.group ? esc(v.group) + ' ' : ''}${esc(v.label)}: ${v.price}`).join('<br>');
+            if (g.variants && g.variants.length) return g.variants.map(v => `${v.group ? esc(v.group) + ' ' : ''}${esc(v.label)}: ${v.price}${v.oldPrice > v.price ? ` <span class="text-gray-500 line-through">${v.oldPrice}</span>` : ''}`).join('<br>') + (discOf(g) ? `<br><span class="text-emerald-400 font-bold">خصم ${discOf(g)}% (قديم)</span>` : '');
             return `<input type="number" value="${g.price}" onchange="updateGamePrice('${g.id}', this.value)" class="w-20 bg-aura-darkBg border border-aura-border rounded p-1 text-xs text-yellow-400 font-bold">`;
         }
         function onCatChange() {
@@ -1684,23 +1834,26 @@ grid.appendChild(buildCard(game));
             document.getElementById('newGameCat').value = g.category;
             document.getElementById('newGamePrice').value = g.price || '';
             document.getElementById('newGamePlatform').value = g.platform || 'both';
-            document.getElementById('priceP').value = pv ? pv.price : '';
-            document.getElementById('priceS').value = sv ? sv.price : '';
-            ['p4P', 'p4S', 'p5P', 'p5S'].forEach(id => document.getElementById(id).value = '');
-            const vm = { ps4_primary: 'p4P', ps4_secondary: 'p4S', ps5_primary: 'p5P', ps5_secondary: 'p5S' };
-            (g.variants || []).forEach(v => { if (vm[v.key]) document.getElementById(vm[v.key]).value = v.price; });
-['1', '3', '12'].forEach(d => {
-                ['sp', 'ss'].forEach(pre => document.getElementById(pre + d).value = '');
-            });
-            if (g.category === 'subs') {
-                const lbl = { '1': 'شهر', '3': '3 شهور', '12': 'سنة' };
-                (g.variants || []).forEach(v => {
+            PRICE_IDS.forEach(id => { document.getElementById(id).value = ''; document.getElementById(id + '_old').value = ''; });
+            const setP = (id, v) => {
+                const d = discOf(g);
+                const manual = v.oldPrice > v.price;
+                document.getElementById(id).value = (manual || !d) ? v.price : Math.round(v.price * (1 - d / 100));
+                document.getElementById(id + '_old').value = manual ? v.oldPrice : (d ? v.price : '');
+            };
+            const vm = { primary: 'priceP', secondary: 'priceS', ps4_primary: 'p4P', ps4_secondary: 'p4S', ps5_primary: 'p5P', ps5_secondary: 'p5S' };
+            const lbl = { '1': 'شهر', '3': '3 شهور', '12': 'سنة' };
+            (g.variants || []).forEach(v => {
+                if (g.category === 'subs') {
                     const d = Object.keys(lbl).find(k => lbl[k] === v.label);
-                    if (d) document.getElementById((v.group === 'Secondary' ? 'ss' : 'sp') + d).value = v.price;
-                });
-            }
+                    if (d) setP((v.group === 'Secondary' ? 'ss' : 'sp') + d, v);
+                } else if (vm[v.key]) {
+                    setP(vm[v.key], v);
+                }
+            });
             document.getElementById('newGameStock').checked = g.inStock !== false;
             document.getElementById('newGameTrend').checked = !!g.trending;
+            document.getElementById('newGameBest').checked = !!g.bestSeller;
             document.getElementById('gameImgPreview').src = g.image;
             document.getElementById('gameImgPreviewContainer').classList.remove('hidden');
             onCatChange();
@@ -1736,6 +1889,15 @@ grid.appendChild(buildCard(game));
             await syncCloudAndSave();
         }
 
+        async function toggleBest(id) {
+            const g = storeState.games.find(x => x.id === id);
+            if (!g) return;
+            g.bestSeller = !g.bestSeller;
+            renderGames();
+            renderAdminGamesTable();
+            await syncCloudAndSave();
+        }
+
         async function toggleStock(id) {
             const g = storeState.games.find(x => x.id === id);
             if (!g) return;
@@ -1745,12 +1907,369 @@ grid.appendChild(buildCard(game));
             await syncCloudAndSave();
         }
 
+        async function acceptOrder(id) {
+            await updateOrderStatus(id, 'accepted');
+            renderAdminOrders();
+        }
+        async function rejectOrder(id) {
+            const reason = prompt('سبب الرفض (اختياري، هيظهر للزبون):');
+            if (reason === null) return; // الأدمن لغى
+            try {
+                await dbPut('orders/' + id + '/rejectReason', reason.trim());
+                await dbPut('orders/' + id + '/status', 'rejected');
+                showToast('تم رفض الطلب');
+            } catch (e) {
+                showToast('فشل رفض الطلب!');
+            }
+            renderAdminOrders();
+        }
+
         async function updateOrderStatus(id, status) {
             try {
                 await dbPut('orders/' + id + '/status', status);
                 showToast('تم تحديث حالة الطلب');
             } catch (e) {
                 showToast('فشل تحديث الحالة!');
+            }
+        }
+
+        // ===================== إشعارات الطلبات =====================
+        // ملحوظة: الإشعارات بتشتغل طول ما الصفحة مفتوحة (الأدمن بعد تسجيل الدخول). مفيش إشعار والموقع مقفول.
+        let alertTimer = null, alertAction = null, audioCtx = null;
+
+        function showAlertBanner({ icon, title, body, color, onClick, duration = 12000 }) {
+            const b = document.getElementById('alertBanner');
+            document.getElementById('alertIcon').innerText = icon;
+            document.getElementById('alertTitle').innerText = title;
+            document.getElementById('alertBody').innerText = body || '';
+            b.style.borderColor = color || '#ff1e42';
+            alertAction = onClick || null;
+            b.classList.remove('opacity-0', 'pointer-events-none', '-translate-y-6');
+            clearTimeout(alertTimer);
+            alertTimer = setTimeout(hideAlertBanner, duration);
+        }
+        function hideAlertBanner() {
+            document.getElementById('alertBanner').classList.add('opacity-0', 'pointer-events-none', '-translate-y-6');
+        }
+        function alertBannerClick() {
+            hideAlertBanner();
+            if (alertAction) alertAction();
+        }
+
+        function playBeep() {
+            try {
+                audioCtx = audioCtx || new (window.AudioContext || window.webkitAudioContext)();
+                if (audioCtx.state === 'suspended') audioCtx.resume();
+                [0, 0.18].forEach((t, k) => {
+                    const o = audioCtx.createOscillator(), g = audioCtx.createGain();
+                    o.type = 'sine';
+                    o.frequency.value = k ? 1175 : 880;
+                    g.gain.setValueAtTime(0.0001, audioCtx.currentTime + t);
+                    g.gain.exponentialRampToValueAtTime(0.25, audioCtx.currentTime + t + 0.02);
+                    g.gain.exponentialRampToValueAtTime(0.0001, audioCtx.currentTime + t + 0.16);
+                    o.connect(g); g.connect(audioCtx.destination);
+                    o.start(audioCtx.currentTime + t);
+                    o.stop(audioCtx.currentTime + t + 0.17);
+                });
+            } catch (e) { /* الصوت اختياري */ }
+        }
+
+        function systemNotify(title, body) {
+            try {
+                if ('Notification' in window && Notification.permission === 'granted') {
+                    new Notification(title, { body, icon: document.querySelector('header img')?.src });
+                }
+            } catch (e) { /* بعض موبايلات كروم بتمنعها بدون service worker */ }
+        }
+
+        // --- الأدمن: طلب جديد ---
+        let adminWatchTimer = null, pendingNewOrders = 0;
+        const baseTitle = document.title;
+
+        function updateOrdersBadge() {
+            const bd = document.getElementById('ordersBadge');
+            bd.innerText = pendingNewOrders;
+            bd.classList.toggle('hidden', pendingNewOrders === 0);
+            document.title = pendingNewOrders ? `(${pendingNewOrders}) 🔔 ${baseTitle}` : baseTitle;
+        }
+        function clearOrdersBadge() {
+            pendingNewOrders = 0;
+            updateOrdersBadge();
+        }
+
+        function readSeen() {
+            try { return JSON.parse(localStorage.getItem('aura_seen_orders') || 'null'); } catch (e) { return null; }
+        }
+        function writeSeen(arr) {
+            try { localStorage.setItem('aura_seen_orders', JSON.stringify(arr)); } catch (e) {}
+        }
+
+        async function checkNewOrders() {
+            try {
+                const r = await fetch(`${DB_URL}/orders.json?shallow=true`, { cache: 'no-store' });
+                if (!r.ok) return;
+                const ids = Object.keys((await r.json()) || {});
+                const seen = readSeen();
+                if (seen === null) { writeSeen(ids); return; } // أول مرة: نسجل الموجود من غير إزعاج
+                const fresh = ids.filter(id => !seen.includes(id));
+                if (!fresh.length) return;
+                writeSeen(ids);
+                pendingNewOrders += fresh.length;
+                updateOrdersBadge();
+                let first = null;
+                try { first = await dbGet('orders/' + fresh[fresh.length - 1]); } catch (e) {}
+                const title = fresh.length > 1 ? `🔔 ${fresh.length} طلبات جديدة!` : '🔔 طلب جديد!';
+                const body = first ? `${first.customerName} • EGP ${first.total} • ${first.paymentMethod}` : 'افتح الطلبات الواردة';
+                showAlertBanner({ icon: '🛒', title, body, duration: 20000, onClick: openOrdersFromAlert });
+                playBeep();
+                systemNotify(title, body);
+                if (!document.getElementById('tabViewOrders').classList.contains('hidden')) renderAdminOrders();
+            } catch (e) {
+                console.warn('Order watch error:', e);
+            }
+        }
+
+        function openOrdersFromAlert() {
+            openAdminModal();
+            const btn = document.querySelector("[onclick^=\"switchAdminTab('viewOrders'\"]");
+            if (!document.getElementById('adminDashboardContent').classList.contains('hidden') && btn) switchAdminTab('viewOrders', btn);
+        }
+
+        function startAdminOrderWatch() {
+            // لازم يتنادى من ضغطة الأدمن عشان الصوت وطلب إذن الإشعارات يشتغلوا
+            try { if ('Notification' in window && Notification.permission === 'default') Notification.requestPermission(); } catch (e) {}
+            try { audioCtx = audioCtx || new (window.AudioContext || window.webkitAudioContext)(); } catch (e) {}
+            clearInterval(adminWatchTimer);
+            checkNewOrders();
+            adminWatchTimer = setInterval(checkNewOrders, 8000);
+        }
+
+        // --- الزبون: تغيّر حالة طلبه (قبول / رفض / تسليم) ---
+        const FINAL_STATUSES = ['rejected', 'delivered', 'canceled'];
+        function readMyOrders() {
+            try { return JSON.parse(localStorage.getItem('aura_my_orders') || '{}'); } catch (e) { return {}; }
+        }
+        function writeMyOrders(o) {
+            try { localStorage.setItem('aura_my_orders', JSON.stringify(o)); } catch (e) {}
+        }
+        function trackMyOrder(id) {
+            const o = readMyOrders();
+            o[id] = { status: 'new', ts: Date.now() };
+            writeMyOrders(o);
+        }
+        async function checkMyOrders() {
+            const mine = readMyOrders();
+            const week = 7 * 24 * 3600 * 1000;
+            let changed = false;
+            for (const id of Object.keys(mine)) {
+                if (Date.now() - mine[id].ts > week) { delete mine[id]; changed = true; continue; }
+                try {
+                    const st = await dbGet('orders/' + id + '/status');
+                    if (!st || st === mine[id].status) continue;
+                    const ar = storeState.lang === 'ar';
+                    if (st === 'rejected') {
+                        let reason = '';
+                        try { reason = await dbGet('orders/' + id + '/rejectReason'); } catch (e) {}
+                        showAlertBanner({ icon: '❌', color: '#ef4444', duration: 30000,
+                            title: ar ? 'تم رفض طلبك' : 'Your order was rejected',
+                            body: (ar ? 'رقم الطلب: ' : 'Order: ') + id + (reason ? '\n' + (ar ? 'السبب: ' : 'Reason: ') + reason : '') });
+                    } else if (st === 'accepted') {
+                        showAlertBanner({ icon: '👍', color: '#10b981', title: ar ? 'تم قبول طلبك' : 'Your order was accepted',
+                            body: (ar ? 'جاري تنفيذه، رقم الطلب: ' : 'In progress, order: ') + id });
+                    } else if (st === 'delivered') {
+                        showAlertBanner({ icon: '✅', color: '#10b981', title: ar ? 'تم تسليم طلبك' : 'Your order was delivered',
+                            body: (ar ? 'رقم الطلب: ' : 'Order: ') + id });
+                    } else if (st === 'canceled') {
+                        showAlertBanner({ icon: '⚠️', color: '#f59e0b', title: ar ? 'تم إلغاء طلبك' : 'Your order was canceled',
+                            body: (ar ? 'رقم الطلب: ' : 'Order: ') + id });
+                    }
+                    playBeep();
+                    systemNotify(document.getElementById('alertTitle').innerText, document.getElementById('alertBody').innerText);
+                    if (FINAL_STATUSES.includes(st)) delete mine[id]; else mine[id].status = st;
+                    changed = true;
+                } catch (e) { /* نجرب في الدورة الجاية */ }
+            }
+            if (changed) writeMyOrders(mine);
+        }
+
+        // ===================== حفظ السلة =====================
+        function saveCart() {
+            try {
+                // بنحفظ البيانات الأساسية بس (من غير الصور)، والصور بترجع من قايمة المنتجات
+                const slim = storeState.cart.map(i => ({ cartKey: i.cartKey, id: i.id, title: i.title, price: i.price, variantLabel: i.variantLabel || '', qty: i.qty, category: i.category }));
+                localStorage.setItem('aura_cart', JSON.stringify(slim));
+            } catch (e) { /* مساحة التخزين ممتلية: مش مشكلة */ }
+        }
+        function loadCart() {
+            try {
+                const c = JSON.parse(localStorage.getItem('aura_cart') || '[]');
+                if (!Array.isArray(c)) return;
+                storeState.cart = c.filter(i => i && i.id && i.qty > 0).map(i => {
+                    const g = storeState.games.find(x => x.id === i.id);
+                    return { ...i, image: g ? g.image : '' };
+                });
+            } catch (e) {}
+        }
+        // بعد كل تحديث من السحابة: نحدّث أسعار السلة وننضّف المنتجات اللي اتشالت أو نفذت
+        function reconcileCart() {
+            if (!storeState.cart.length) return;
+            let removed = 0, changed = false;
+            storeState.cart = storeState.cart.filter(it => {
+                const g = storeState.games.find(x => x.id === it.id);
+                if (!g || g.inStock === false || g.category === 'cards') { removed++; return false; }
+                const vk = (it.cartKey || '').split('|')[1];
+                const v = vk ? (g.variants || []).find(x => x.key === vk) : null;
+                if (vk && !v) { removed++; return false; }
+                const np = priceForVariant(g, v);
+                if (np !== it.price) { it.price = np; changed = true; }
+                if (it.title !== g.title) { it.title = g.title; changed = true; }
+                if (it.image !== g.image) { it.image = g.image; changed = true; }
+                return true;
+            });
+            if (removed || changed) updateCartUI();
+            if (removed) showToast(storeState.lang === 'ar' ? 'اتشال من سلتك منتجات مبقتش متاحة' : 'Some unavailable items were removed from your cart');
+        }
+        function loadCustomer() {
+            try {
+                const c = JSON.parse(localStorage.getItem('aura_customer') || '{}');
+                if (c.name) document.getElementById('custNameInput').value = c.name;
+                if (c.phone) document.getElementById('custPhoneInput').value = c.phone;
+            } catch (e) {}
+        }
+
+        // ===================== تتبع الطلب + رسالة التأكيد =====================
+        function normPhone(v) {
+            let d = String(v || '').replace(/[٠-٩]/g, c => '٠١٢٣٤٥٦٧٨٩'.indexOf(c)).replace(/[^\d]/g, '');
+            if (d.startsWith('0020')) d = '0' + d.slice(4);
+            else if (d.startsWith('20') && d.length === 12) d = '0' + d.slice(2);
+            return d;
+        }
+        function rememberOrder(o) {
+            try {
+                const h = JSON.parse(localStorage.getItem('aura_order_history') || '[]');
+                h.unshift({ id: o.id, ts: o.ts, total: o.total });
+                const cutoff = Date.now() - 90 * 24 * 3600 * 1000;
+                localStorage.setItem('aura_order_history', JSON.stringify(h.filter(x => x.ts > cutoff).slice(0, 15)));
+                localStorage.setItem('aura_customer', JSON.stringify({ name: o.customerName, phone: o.customerPhone }));
+            } catch (e) {}
+        }
+
+        const STATUS_INFO = {
+            new:       { icon: '🕐', color: '#f59e0b', ar: 'قيد المراجعة', en: 'Under review',
+                         dAr: 'استلمنا طلبك وبنراجع إيصال الدفع.', dEn: 'We received your order and are reviewing the payment receipt.' },
+            accepted:  { icon: '👍', color: '#10b981', ar: 'تم القبول', en: 'Accepted',
+                         dAr: 'تم قبول طلبك وجاري تنفيذه، وهنتواصل معاك على واتساب.', dEn: 'Your order was accepted and is being processed. We will contact you on WhatsApp.' },
+            delivered: { icon: '✅', color: '#10b981', ar: 'تم التسليم', en: 'Delivered',
+                         dAr: 'تم تسليم طلبك. شكراً لثقتك في Aura Store.', dEn: 'Your order was delivered. Thank you for choosing Aura Store.' },
+            rejected:  { icon: '❌', color: '#ef4444', ar: 'مرفوض', en: 'Rejected',
+                         dAr: 'للأسف تم رفض الطلب. تواصل معانا على واتساب لو محتاج توضيح.', dEn: 'Sorry, your order was rejected. Contact us on WhatsApp if you need details.' },
+            canceled:  { icon: '⚠️', color: '#f59e0b', ar: 'ملغي', en: 'Canceled',
+                         dAr: 'تم إلغاء الطلب.', dEn: 'The order was canceled.' }
+        };
+
+        function openTrack(presetId) {
+            const ar = storeState.lang === 'ar';
+            document.getElementById('trackTitle').innerText = ar ? 'تتبع طلبك' : 'Track your order';
+            document.getElementById('trackInput').placeholder = ar ? 'رقم الطلب أو رقم الموبايل' : 'Order number or phone number';
+            document.getElementById('trackBtn').innerText = ar ? 'بحث' : 'Search';
+            document.getElementById('trackResult').innerHTML = '';
+            renderTrackRecent();
+            document.getElementById('trackOverlay').classList.remove('hidden');
+            if (presetId) {
+                document.getElementById('trackInput').value = presetId;
+                trackSearch();
+            }
+        }
+        function closeTrack() {
+            document.getElementById('trackOverlay').classList.add('hidden');
+        }
+        function renderTrackRecent() {
+            const box = document.getElementById('trackRecent');
+            let h = [];
+            try { h = JSON.parse(localStorage.getItem('aura_order_history') || '[]'); } catch (e) {}
+            if (!h.length) { box.innerHTML = ''; return; }
+            const ar = storeState.lang === 'ar';
+            box.innerHTML = `<div class="text-[11px] text-gray-400 mb-1.5">${ar ? 'طلباتك الأخيرة على الجهاز ده:' : 'Your recent orders on this device:'}</div>
+                <div class="flex flex-wrap gap-1.5">${h.map(x => `<button onclick="openTrack('${esc(x.id)}')" class="px-2.5 py-1 rounded-lg bg-aura-darkBg border border-aura-border hover:border-aura-red text-[11px] font-mono text-yellow-400 transition">${esc(x.id)}</button>`).join('')}</div>`;
+        }
+
+        async function fetchOrderLite(id) {
+            let netErr = false;
+            const get = k => dbGet(`orders/${id}/${k}`).catch(() => { netErr = true; return null; });
+            const [status, items, total, date, rejectReason] = await Promise.all(['status', 'items', 'total', 'date', 'rejectReason'].map(get));
+            if (netErr) throw new Error('network');
+            if (!status && !items) return null;
+            return { id, status: status || 'new', items: items ? (Array.isArray(items) ? items : Object.values(items)) : [], total, date, rejectReason };
+        }
+        async function fetchOrdersByPhone(key) {
+            const url = `${DB_URL}/orders.json?orderBy=%22phoneKey%22&equalTo=%22${encodeURIComponent(key)}%22&limitToLast=10`;
+            const r = await fetch(url, { cache: 'no-store' });
+            if (!r.ok) {
+                const t = await r.text().catch(() => '');
+                const e = new Error('query ' + r.status);
+                e.noIndex = /index/i.test(t);
+                throw e;
+            }
+            const data = await r.json();
+            return Object.values(data || {}).sort((a, b) => (b.ts || 0) - (a.ts || 0)).map(o => ({
+                id: o.id, status: o.status || 'new', total: o.total, date: o.date, rejectReason: o.rejectReason,
+                items: o.items ? (Array.isArray(o.items) ? o.items : Object.values(o.items)) : []
+            }));
+        }
+
+        function trackMsg(txt) {
+            return `<div class="text-center text-xs text-gray-400 py-6">${txt}</div>`;
+        }
+        function renderTrackCards(list) {
+            const ar = storeState.lang === 'ar';
+            return list.map(o => {
+                const info = STATUS_INFO[o.status] || { icon: '📦', color: '#9ca3af', ar: String(o.status), en: String(o.status), dAr: '', dEn: '' };
+                const items = (o.items || []).map(i => `<li>• ${esc(i.title)}${i.variantLabel ? ' [' + esc(i.variantLabel) + ']' : ''} × ${esc(i.qty)}</li>`).join('');
+                return `<div class="bg-aura-darkBg border border-aura-border rounded-xl p-3 space-y-2">
+                    <div class="flex justify-between items-center gap-2">
+                        <span class="font-mono text-xs text-aura-red font-bold">${esc(o.id)}</span>
+                        <span class="text-[10px] text-gray-400">${esc(o.date || '')}</span>
+                    </div>
+                    <div class="flex items-center gap-3 px-3 py-2 rounded-lg" style="background:${info.color}22;border:1px solid ${info.color}66">
+                        <span class="text-2xl">${info.icon}</span>
+                        <div>
+                            <div class="text-sm font-black" style="color:${info.color}">${ar ? info.ar : info.en}</div>
+                            <div class="text-[11px] text-gray-300">${ar ? info.dAr : info.dEn}</div>
+                        </div>
+                    </div>
+                    ${o.status === 'rejected' && o.rejectReason ? `<div class="text-xs text-red-300 bg-red-950/40 border border-red-500/30 rounded-lg p-2"><strong>${ar ? 'السبب:' : 'Reason:'}</strong> ${esc(o.rejectReason)}</div>` : ''}
+                    ${items ? `<ul class="text-[11px] text-gray-300 space-y-0.5">${items}</ul>` : ''}
+                    <div class="flex justify-between text-xs"><span class="text-gray-400">${ar ? 'الإجمالي' : 'Total'}</span><b class="text-yellow-400">EGP ${esc(o.total)}</b></div>
+                </div>`;
+            }).join('');
+        }
+
+        async function trackSearch() {
+            const ar = storeState.lang === 'ar';
+            const raw = document.getElementById('trackInput').value.trim();
+            const out = document.getElementById('trackResult');
+            if (!raw) { showToast(ar ? 'اكتب رقم الطلب أو رقم الموبايل' : 'Enter an order or phone number'); return; }
+            out.innerHTML = trackMsg(ar ? 'جاري البحث...' : 'Searching...');
+            try {
+                let list = [];
+                if (/^[\d\s+\-٠-٩]+$/.test(raw)) {
+                    const key = normPhone(raw);
+                    if (key.length < 9) { out.innerHTML = trackMsg(ar ? 'رقم الموبايل غير صحيح' : 'Invalid phone number'); return; }
+                    list = await fetchOrdersByPhone(key);
+                } else {
+                    const id = raw.replace(/\s/g, '');
+                    if (/^[A-Za-z0-9_-]{4,40}$/.test(id)) {
+                        const o = (await fetchOrderLite(id)) || (await fetchOrderLite(id.toUpperCase()));
+                        if (o) list = [o];
+                    }
+                }
+                out.innerHTML = list.length ? renderTrackCards(list)
+                    : trackMsg(ar ? 'مفيش طلب بالبيانات دي. اتأكد من رقم الطلب أو رقم الموبايل اللي كتبته وقت الطلب.' : 'No order found. Check the order number or the phone number you used.');
+            } catch (e) {
+                console.warn('Track error:', e);
+                out.innerHTML = trackMsg(e.noIndex
+                    ? (ar ? 'البحث برقم الموبايل مش متاح حالياً، استخدم رقم الطلب.' : 'Phone search is unavailable right now, please use your order number.')
+                    : (ar ? 'تعذر الاتصال، جرّب تاني بعد شوية.' : 'Connection problem, please try again.'));
             }
         }
 
