@@ -63,9 +63,38 @@
         html {
             -webkit-text-size-adjust: 100%;
         }
+        /* انتقال سلس بين الفلاتر: الكروت بتظهر واحد ورا التاني */
+        #gamesGrid { transition: opacity .16s ease; }
+        @keyframes cardIn {
+            from { opacity: 0; transform: translateY(16px) scale(.97); }
+            to   { opacity: 1; transform: none; }
+        }
+        .card-enter {
+            animation: cardIn .5s cubic-bezier(.22, 1, .36, 1) both;
+            animation-delay: var(--d, 0ms);
+        }
+        .cat-btn:active, .plat-btn:active { transform: scale(.94); }
+        @media (prefers-reduced-motion: reduce) {
+            .card-enter { animation: none; }
+            #gamesGrid { transition: none; }
+        }
     </style>
 </head>
 <body class="min-h-screen flex flex-col justify-between">
+    <!-- Splash loading screen (0 → 100) قبل دخول الموقع -->
+    <div id="splashScreen" class="fixed inset-0 z-[200] bg-aura-darkBg flex flex-col items-center justify-center gap-6 px-8" style="transition: opacity .5s;">
+        <img id="splashLogo" alt="Aura Store" class="w-24 h-24 rounded-full object-cover border-2 border-aura-red/60 neon-glow">
+        <h1 class="text-2xl font-black tracking-wider text-white">AURA <span class="text-aura-red">STORE</span></h1>
+        <div class="w-full max-w-xs">
+            <div class="h-2 w-full bg-aura-cardBg border border-aura-border rounded-full overflow-hidden">
+                <div id="cloudProgressBar" class="h-full bg-aura-red rounded-full" style="width:0%; box-shadow:0 0 10px #ff1e42; transition: width .25s ease-out;"></div>
+            </div>
+            <div class="flex justify-between mt-2 text-xs font-semibold text-gray-400">
+                <span id="splashText">جاري التحميل...</span>
+                <span id="splashPercent" class="text-aura-red font-black">0%</span>
+            </div>
+        </div>
+    </div>
 
     <!-- Header Navigation -->
     <header class="sticky top-0 z-40 bg-aura-darkBg/95 backdrop-blur-md border-b border-aura-border">
@@ -569,15 +598,67 @@
             updatePaymentDetailsDisplay();
 
             // Initial Cloud Fetch & polling
+            const hdrLogo = document.querySelector('header img');
+            if (hdrLogo) document.getElementById('splashLogo').src = hdrLogo.src;
+            startCloudProgress();
+            // أمان: مهما حصل ماتسيبش الزبون على شاشة التحميل أكتر من 15 ثانية
+            setTimeout(finishCloudProgress, 15000);
             fetchCloudState();
             setInterval(() => fetchCloudState(), 4000);
         });
 
+        // ===================== Cloud loading progress (0 → 100) =====================
+        // الأرقام تقديرية: بتطلع بسرعة لحد 90% وبعدين بتبطّأ، ولما الكلاود يرد تقفز لـ 100%
+        let cloudProgress = 0, cloudProgressTimer = null, cloudFirstLoadDone = false;
+
+        function setCloudProgress(p) {
+            cloudProgress = p;
+            const bar = document.getElementById('cloudProgressBar');
+            if (bar) bar.style.width = p + '%';
+            const pc = document.getElementById('splashPercent');
+            if (pc) pc.innerText = Math.floor(p) + '%';
+            const st = document.getElementById('splashText');
+            if (st) st.innerText = storeState.lang === 'ar' ? 'جاري التحميل...' : 'Loading...';
+        }
+
+        function startCloudProgress() {
+            setCloudProgress(0);
+            clearInterval(cloudProgressTimer);
+            cloudProgressTimer = setInterval(() => {
+                if (cloudFirstLoadDone) return;
+                // كل ما يقرب من 90% يبطّأ
+                const step = (92 - cloudProgress) * 0.08 + 0.3;
+                setCloudProgress(Math.min(cloudProgress + step, 92));
+            }, 200);
+        }
+
+        function finishCloudProgress() {
+            if (cloudFirstLoadDone) return;
+            cloudFirstLoadDone = true;
+            clearInterval(cloudProgressTimer);
+            setCloudProgress(100);
+            setTimeout(() => {
+                const w = document.getElementById('splashScreen');
+                if (w) {
+                    w.style.opacity = '0';
+                    w.style.pointerEvents = 'none';
+                    setTimeout(() => w.remove(), 600);
+                }
+            }, 400);
+        }
+
         // ===================== Cloud (Firebase REST) =====================
         async function dbGet(path) {
-            const r = await fetch(`${DB_URL}/${path}.json`, { cache: 'no-store' });
-            if (!r.ok) throw new Error('GET ' + r.status);
-            return r.json();
+            // مهلة 12 ثانية بدل الانتظار للأبد على النت الضعيف
+            const ctrl = new AbortController();
+            const t = setTimeout(() => ctrl.abort(), 12000);
+            try {
+                const r = await fetch(`${DB_URL}/${path}.json`, { cache: 'no-store', signal: ctrl.signal });
+                if (!r.ok) throw new Error('GET ' + r.status);
+                return await r.json();
+            } finally {
+                clearTimeout(t);
+            }
         }
         async function dbPut(path, data) {
             const r = await fetch(`${DB_URL}/${path}.json`, {
@@ -594,15 +675,23 @@
         }
 
         // بيسحب ملف meta الصغير بس، ولو اتغير يسحب المنتجات
+        let cloudFetchBusy = false;
         async function fetchCloudState(force = false) {
+            // لو الطلب اللي قبله لسه شغال متبعتش واحد جديد فوقه
+            if (cloudFetchBusy) return;
+            cloudFetchBusy = true;
             try {
+                // أول تحميل: نسحب meta والمنتجات في نفس الوقت بدل ورا بعض (أسرع على النت الضعيف)
+                const firstLoad = !cloudFirstLoadDone;
+                const gamesPromise = (firstLoad || force) ? dbGet('games').catch(() => null) : null;
                 const meta = await dbGet('meta');
                 if (!meta) { // الداتابيز فاضية: ارفع المنتجات الافتراضية
                     await syncCloudAndSave();
+                    finishCloudProgress();
                     return;
                 }
                 if (force || meta.updatedAt !== storeState.lastUpdatedTimestamp) {
-                    const g = await dbGet('games');
+                    const g = (gamesPromise && await gamesPromise) || await dbGet('games');
                     storeState.games = Array.isArray(g) ? g.filter(Boolean) : Object.values(g || {});
                     if (meta.adminPassword) storeState.adminPassword = meta.adminPassword;
                     storeState.lastUpdatedTimestamp = meta.updatedAt;
@@ -613,9 +702,14 @@
                     }
                 }
                 updateCloudBadge(true);
+                finishCloudProgress();
             } catch (e) {
                 console.warn('Sync error:', e);
                 updateCloudBadge(false);
+                // لو فشل أول تحميل (مهلة/نت ضعيف) نقفل الشريط ونكمل بالنسخة المحلية، والمحاولة بتتكرر كل 4 ثواني
+                finishCloudProgress();
+            } finally {
+                cloudFetchBusy = false;
             }
         }
 
@@ -747,8 +841,45 @@
             storeState.searchQuery = '';
             if (storeState.currentPlatform !== 'all') filterPlatform(storeState.currentPlatform);
             filterCategory('all', document.querySelector('.cat-btn'));
-            setTimeout(() => document.getElementById('trendSection').scrollIntoView({ behavior: 'smooth', block: 'start' }), 50);
+            setTimeout(() => smoothScrollTo('trendSection'), 50);
         }
+
+        // ===================== تمرير ناعم =====================
+        // بيبدأ بطيء، يسرّع في النص، ويهدّى في الآخر (easeInOutCubic) بدل القفزة المفاجئة
+        let smoothScrollRaf = null;
+        function smoothScrollTo(id, duration = 1000) {
+            const el = document.getElementById(id);
+            if (!el) return;
+            const offset = 96; // ارتفاع الهيدر الثابت
+            const target = Math.max(0, el.getBoundingClientRect().top + window.pageYOffset - offset);
+            const start = window.pageYOffset;
+            const dist = target - start;
+            const reduce = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+            if (reduce || Math.abs(dist) < 2) { window.scrollTo(0, target); return; }
+            cancelAnimationFrame(smoothScrollRaf);
+            const t0 = performance.now();
+            const ease = t => t < 0.5 ? 4 * t * t * t : 1 - Math.pow(-2 * t + 2, 3) / 2;
+            const stop = () => cancelAnimationFrame(smoothScrollRaf);
+            // لو الزبون لمس الشاشة أو لف بالماوس أثناء الحركة نوقفها فوراً
+            ['wheel', 'touchstart', 'keydown'].forEach(ev => window.addEventListener(ev, stop, { once: true, passive: true }));
+            const step = now => {
+                const p = Math.min((now - t0) / duration, 1);
+                window.scrollTo(0, start + dist * ease(p));
+                if (p < 1) smoothScrollRaf = requestAnimationFrame(step);
+            };
+            smoothScrollRaf = requestAnimationFrame(step);
+        }
+
+        // أي لينك داخلي (#...) يمشي بالتمرير الناعم
+        document.addEventListener('click', e => {
+            const a = e.target.closest('a[href^="#"]');
+            if (!a) return;
+            const id = a.getAttribute('href').slice(1);
+            if (id && document.getElementById(id)) {
+                e.preventDefault();
+                smoothScrollTo(id);
+            }
+        });
 
         function renderTrend() {
             const sec = document.getElementById('trendSection');
@@ -788,6 +919,28 @@ grid.appendChild(buildCard(game));
             }
         }
 
+        // نسخة ناعمة من renderGames للاستخدام لما الزبون يدوس على فلتر:
+        // الكروت القديمة تتلاشى، وبعدين الجديدة تدخل بالتتابع
+        let smoothRenderTimer = null;
+        function renderGamesSmooth() {
+            const grid = document.getElementById('gamesGrid');
+            const reduce = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+            if (reduce) { renderGames(); return; }
+            clearTimeout(smoothRenderTimer);
+            // نثبت الارتفاع أثناء الانتقال عشان الصفحة ماتنطش
+            grid.style.minHeight = grid.offsetHeight + 'px';
+            grid.style.opacity = '0';
+            smoothRenderTimer = setTimeout(() => {
+                renderGames();
+                Array.from(grid.children).forEach((c, i) => {
+                    c.classList.add('card-enter');
+                    c.style.setProperty('--d', Math.min(i, 12) * 45 + 'ms');
+                });
+                grid.style.opacity = '1';
+                setTimeout(() => { grid.style.minHeight = ''; }, 700);
+            }, 170);
+        }
+
         function filterCategory(cat, btn) {
             storeState.currentCategory = cat;
             document.querySelectorAll('.cat-btn').forEach(b => {
@@ -796,7 +949,7 @@ grid.appendChild(buildCard(game));
             });
             btn.classList.remove('bg-aura-cardBg', 'text-gray-300');
             btn.classList.add('bg-aura-red', 'text-white');
-            renderGames();
+            renderGamesSmooth();
         }
 
         function handleSearch() {
@@ -1353,7 +1506,7 @@ grid.appendChild(buildCard(game));
                 b.classList.toggle('bg-aura-cardBg', !on);
                 b.classList.toggle('text-gray-300', !on);
             });
-            renderGames();
+            renderGamesSmooth();
         }
         function priceCell(g) {
             if (g.variants && g.variants.length) return g.variants.map(v => `${v.group ? esc(v.group) + ' ' : ''}${esc(v.label)}: ${v.price}`).join('<br>');
