@@ -64,7 +64,9 @@
             -webkit-text-size-adjust: 100%;
         }
         /* انتقال سلس بين الفلاتر: الكروت بتظهر واحد ورا التاني */
-        #gamesGrid { transition: opacity .16s ease; }
+        #gamesGrid { transition: opacity .16s ease, transform .35s cubic-bezier(.22, 1, .36, 1); }
+        /* السحب الأفقي للتنقل بين القوائم، مع إبقاء التمرير الرأسي والزووم بالإصبعين شغالين */
+        #gamesSection, #trendSection { touch-action: pan-y pinch-zoom; overflow-x: clip; }
         @keyframes cardIn {
             from { opacity: 0; transform: translateY(16px) scale(.97); }
             to   { opacity: 1; transform: none; }
@@ -104,7 +106,7 @@
                 <img src="data:image/jpeg;base64,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" alt="Aura Store" class="w-11 h-11 sm:w-12 sm:h-12 rounded-full object-cover border border-aura-red/60 neon-glow">
                 <div>
                     <h1 class="text-lg sm:text-2xl font-black tracking-wider text-white">AURA <span class="text-aura-red">STORE</span></h1>
-                    <p class="hidden sm:block text-xs text-gray-400 tracking-widest uppercase font-semibold" id="headerTagline">متجر الألعاب والبطاقات المعتمد</p>
+                    <p class="hidden sm:block text-xs text-gray-400 tracking-widest uppercase font-semibold" id="headerTagline">متجر الألعاب الرقمية المعتمد</p>
                 </div>
             </div>
 
@@ -144,7 +146,7 @@
             <div class="z-10 max-w-xl text-center md:text-right">
                 <span class="px-3 py-1 bg-aura-red/20 border border-aura-red text-aura-red text-xs font-bold uppercase tracking-widest rounded-full" id="heroBadge">تسليم رقمي فوري</span>
                 <h2 class="text-3xl sm:text-5xl font-black mt-3 mb-3 leading-tight text-white" id="heroTitle">ارتقِ بتجربة الألعاب الخاصة بك</h2>
-                <p class="text-gray-300 text-sm sm:text-base leading-relaxed" id="heroSubtitle">احصل على أكواد الألعاب الشحن والبطاقات بأفضل الأسعار مع دعم فني مباشر وسريع.</p>
+                <p class="text-gray-300 text-sm sm:text-base leading-relaxed" id="heroSubtitle">احصل على ألعابك الرقمية واشتراكات بلايستيشن بلس بأفضل الأسعار مع دعم فني مباشر وسريع.</p>
             </div>
             <div class="z-10 flex flex-col sm:flex-row gap-3 w-full md:w-auto">
                 <a href="#gamesSection" class="px-6 py-3.5 rounded-xl bg-aura-red hover:bg-aura-darkRed text-white font-bold text-center transition neon-glow">
@@ -552,11 +554,11 @@
 
         const translations = {
             ar: {
-                headerTagline: 'متجر الألعاب والبطاقات المعتمد',
+                headerTagline: 'متجر الألعاب الرقمية المعتمد',
                 adminBtn: 'الأدمن',
                 heroBadge: 'تسليم رقمي فوري',
                 heroTitle: 'ارتقِ بتجربة الألعاب الخاصة بك',
-                heroSubtitle: 'احصل على أكواد الألعاب والبطاقات بأفضل الأسعار مع دعم فني سريع.',
+                heroSubtitle: 'احصل على ألعابك الرقمية واشتراكات بلايستيشن بلس بأفضل الأسعار مع دعم فني سريع.',
                 exploreGames: 'تصفح المنتجات',
                 catalogTitle: 'المنتجات المتاحة',
                 cartTitle: 'سلة التسوق',
@@ -571,11 +573,11 @@
                 searchPlaceholder: 'ابحث عن لعبة أو اشتراك...'
             },
             en: {
-                headerTagline: 'Official Games & Cards Store',
+                headerTagline: 'Official Digital Games Store',
                 adminBtn: 'Admin',
                 heroBadge: 'Instant Digital Delivery',
                 heroTitle: 'LEVEL UP YOUR GAMING EXPERIENCE',
-                heroSubtitle: 'Get official game keys, top-ups, and gift cards at the best rates with instant support.',
+                heroSubtitle: 'Get your digital games and PlayStation Plus subscriptions at the best rates with instant support.',
                 exploreGames: 'Explore Catalog',
                 catalogTitle: 'Available Products',
                 cartTitle: 'Shopping Cart',
@@ -810,8 +812,8 @@
             const card = document.createElement('div');
             card.className = "bg-aura-cardBg border border-aura-border rounded-2xl overflow-hidden hover:border-aura-red/60 transition duration-300 flex flex-col justify-between group shadow-lg";
             card.innerHTML = `
-                <div class="relative aspect-[4/3] bg-black overflow-hidden">
-                    <img src="${game.image}" alt="${game.title}" class="w-full h-full object-contain group-hover:scale-105 transition duration-500" loading="lazy">
+                <div class="relative aspect-square bg-black overflow-hidden">
+                    <img src="${game.image}" alt="${game.title}" class="w-full h-full object-cover object-center group-hover:scale-105 transition duration-500" loading="lazy" decoding="async">
                     <span class="absolute top-3 left-3 px-2.5 py-1 bg-black/80 backdrop-blur-md border border-aura-border text-[10px] font-bold uppercase tracking-wider text-aura-red rounded-lg">
                         ${catLabel(game)}
                     </span>
@@ -870,6 +872,83 @@
             smoothScrollRaf = requestAnimationFrame(step);
         }
 
+        // ===================== التنقل بين القوائم بالسحب (موبايل) =====================
+        // الترتيب زي الأزرار: كل المنتجات ← ألعاب رقمية ← اشتراكات ← PS4 ← PS5
+        const SWIPE_CATS = ['all', 'games', 'subs'];
+
+        function currentTabIndex() {
+            const p = storeState.currentPlatform;
+            if (p === 'ps4') return 3;
+            if (p === 'ps5') return 4;
+            const i = SWIPE_CATS.indexOf(storeState.currentCategory);
+            return i < 0 ? 0 : i;
+        }
+
+        function goToTab(i, slideX) {
+            const tabs = Array.from(document.querySelectorAll('#categoryTabs .cat-btn, #categoryTabs .plat-btn'));
+            if (i < 0 || i >= tabs.length) return;
+            pendingSlide = slideX;
+            if (i < SWIPE_CATS.length) {
+                // قائمة تصنيف: نلغي فلتر المنصة وبعدين نختار التصنيف
+                storeState.currentPlatform = 'all';
+                document.querySelectorAll('.plat-btn').forEach(b => {
+                    b.classList.remove('bg-aura-red', 'text-white');
+                    b.classList.add('bg-aura-cardBg', 'text-gray-300');
+                });
+                filterCategory(SWIPE_CATS[i], tabs[i]);
+            } else {
+                // قائمة منصة: التصنيف يرجع "الكل" وبعدين نختار المنصة
+                storeState.currentCategory = 'all';
+                document.querySelectorAll('.cat-btn').forEach((b, k) => {
+                    const on = k === 0;
+                    b.classList.toggle('bg-aura-red', on);
+                    b.classList.toggle('text-white', on);
+                    b.classList.toggle('bg-aura-cardBg', !on);
+                    b.classList.toggle('text-gray-300', !on);
+                });
+                if (storeState.currentPlatform === tabs[i].dataset.p) storeState.currentPlatform = 'all';
+                filterPlatform(tabs[i].dataset.p);
+            }
+            // نحرك شريط الأزرار عشان الزر النشط يبان (من غير ما الصفحة تنط رأسياً)
+            const c = document.getElementById('categoryTabs');
+            const br = tabs[i].getBoundingClientRect(), cr = c.getBoundingClientRect();
+            c.scrollBy({ left: (br.left + br.width / 2) - (cr.left + cr.width / 2), behavior: 'smooth' });
+        }
+
+        function initSwipeNav() {
+            let sx = 0, sy = 0, st = 0, tracking = false;
+            const onStart = e => {
+                tracking = false;
+                if (e.touches.length !== 1) return;
+                if (e.target.closest('input, select, textarea')) return;
+                const t = e.touches[0];
+                // نتجاهل اللمسات عند حافة الشاشة عشان ماتتعارضش مع إيماءة الرجوع في الأيفون
+                if (t.clientX < 24 || t.clientX > window.innerWidth - 24) return;
+                sx = t.clientX; sy = t.clientY; st = Date.now(); tracking = true;
+            };
+            const onEnd = e => {
+                if (!tracking) return;
+                tracking = false;
+                const t = e.changedTouches[0];
+                const dx = t.clientX - sx, dy = t.clientY - sy;
+                // سحبة أفقية واضحة وسريعة، مش تمرير رأسي
+                if (Math.abs(dx) < 70 || Math.abs(dx) < Math.abs(dy) * 1.6 || Date.now() - st > 700) return;
+                // السحب ناحية مكان الزر الجاي: في العربي الشمال، وفي الإنجليزي اليمين
+                const rtl = document.documentElement.dir === 'rtl';
+                const next = rtl ? dx < 0 : dx > 0;
+                const i = currentTabIndex() + (next ? 1 : -1);
+                goToTab(i, dx > 0 ? 1 : -1);
+            };
+            ['gamesSection', 'trendSection'].forEach(id => {
+                const el = document.getElementById(id);
+                if (!el) return;
+                el.addEventListener('touchstart', onStart, { passive: true });
+                el.addEventListener('touchend', onEnd, { passive: true });
+                el.addEventListener('touchcancel', () => { tracking = false; }, { passive: true });
+            });
+        }
+        window.addEventListener('DOMContentLoaded', initSwipeNav);
+
         // أي لينك داخلي (#...) يمشي بالتمرير الناعم
         document.addEventListener('click', e => {
             const a = e.target.closest('a[href^="#"]');
@@ -922,20 +1001,32 @@ grid.appendChild(buildCard(game));
         // نسخة ناعمة من renderGames للاستخدام لما الزبون يدوس على فلتر:
         // الكروت القديمة تتلاشى، وبعدين الجديدة تدخل بالتتابع
         let smoothRenderTimer = null;
+        let pendingSlide = 0; // اتجاه الانزلاق عند التنقل بالسحب (+1 يمين / -1 شمال / 0 بدون)
         function renderGamesSmooth() {
             const grid = document.getElementById('gamesGrid');
+            const exitX = pendingSlide;
+            pendingSlide = 0;
             const reduce = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
             if (reduce) { renderGames(); return; }
             clearTimeout(smoothRenderTimer);
             // نثبت الارتفاع أثناء الانتقال عشان الصفحة ماتنطش
             grid.style.minHeight = grid.offsetHeight + 'px';
             grid.style.opacity = '0';
+            if (exitX) grid.style.transform = `translateX(${exitX * 36}px)`;
             smoothRenderTimer = setTimeout(() => {
                 renderGames();
                 Array.from(grid.children).forEach((c, i) => {
                     c.classList.add('card-enter');
                     c.style.setProperty('--d', Math.min(i, 12) * 45 + 'ms');
                 });
+                if (exitX) {
+                    // القائمة الجديدة تدخل من الجهة المعاكسة وتنزلق لمكانها
+                    grid.style.transition = 'none';
+                    grid.style.transform = `translateX(${-exitX * 36}px)`;
+                    void grid.offsetWidth;
+                    grid.style.transition = '';
+                    grid.style.transform = '';
+                }
                 grid.style.opacity = '1';
                 setTimeout(() => { grid.style.minHeight = ''; }, 700);
             }, 170);
@@ -1064,6 +1155,8 @@ grid.appendChild(buildCard(game));
                     canvas.width = width;
                     canvas.height = height;
                     const ctx = canvas.getContext('2d');
+                    ctx.imageSmoothingEnabled = true;
+                    ctx.imageSmoothingQuality = 'high';
                     ctx.drawImage(img, 0, 0, width, height);
 
                     const compressedBase64 = canvas.toDataURL('image/jpeg', quality);
@@ -1241,7 +1334,7 @@ grid.appendChild(buildCard(game));
             const file = event.target.files[0];
             if (!file) return;
 
-            compressAndResizeImage(file, 600, 0.7, (compressedImg) => {
+            compressAndResizeImage(file, 900, 0.85, (compressedImg) => {
                 storeState.uploadedNewGameImgBase64 = compressedImg;
                 document.getElementById('gameImgPreview').src = compressedImg;
                 document.getElementById('gameImgPreviewContainer').classList.remove('hidden');
