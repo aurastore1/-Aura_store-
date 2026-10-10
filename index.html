@@ -65,6 +65,7 @@
         }
         /* انتقال سلس بين الفلاتر: الكروت بتظهر واحد ورا التاني */
         #gamesGrid { transition: opacity .16s ease, transform .35s cubic-bezier(.22, 1, .36, 1); }
+        #trendSection { transition: opacity .16s ease; }
         /* السحب الأفقي للتنقل بين القوائم، مع إبقاء التمرير الرأسي والزووم بالإصبعين شغالين */
         #gamesSection, #trendSection { touch-action: pan-y pinch-zoom; overflow-x: clip; }
         @keyframes cardIn {
@@ -180,6 +181,7 @@
                 <h3 class="text-xl sm:text-2xl font-extrabold flex items-center gap-3">
                     <i class="fa-solid fa-bolt text-yellow-400"></i> Trend Now
                 </h3>
+                <button onclick="goTrend()" aria-label="رجوع لكل المنتجات" class="w-9 h-9 rounded-xl bg-aura-cardBg border border-aura-border hover:border-aura-red text-gray-300 flex items-center justify-center transition"><i class="fa-solid fa-xmark"></i></button>
             </div>
             <div id="trendGrid" class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-3 sm:gap-6"></div>
         </div>
@@ -838,12 +840,43 @@
             return card;
         }
 
-        function goTrend() {
+        // قايمة Trend Now منفصلة: مش بتظهر غير لما الزبون يدوس على الزرار، ودوسة تانية ترجعه لكل المنتجات
+        let trendMode = false;
+        function hasTrend() {
+            return storeState.games.some(g => g.trending && g.category !== 'cards');
+        }
+        function resetFilters() {
+            storeState.currentPlatform = 'all';
+            storeState.currentCategory = 'all';
+            document.querySelectorAll('.plat-btn').forEach(b => {
+                b.classList.remove('bg-aura-red', 'text-white');
+                b.classList.add('bg-aura-cardBg', 'text-gray-300');
+            });
+            document.querySelectorAll('.cat-btn').forEach((b, k) => {
+                const on = k === 0;
+                b.classList.toggle('bg-aura-red', on);
+                b.classList.toggle('text-white', on);
+                b.classList.toggle('bg-aura-cardBg', !on);
+                b.classList.toggle('text-gray-300', !on);
+            });
+        }
+        function enterTrend() {
+            if (!hasTrend()) return;
+            trendMode = true;
             document.getElementById('searchInput').value = '';
             storeState.searchQuery = '';
-            if (storeState.currentPlatform !== 'all') filterPlatform(storeState.currentPlatform);
-            filterCategory('all', document.querySelector('.cat-btn'));
-            setTimeout(() => smoothScrollTo('trendSection'), 50);
+            resetFilters();
+            renderGamesSmooth();
+            setTimeout(() => smoothScrollTo('trendSection'), 260);
+        }
+        function goTrend() {
+            if (trendMode) {
+                trendMode = false;
+                renderGamesSmooth();
+                setTimeout(() => smoothScrollTo('gamesSection'), 260);
+            } else {
+                enterTrend();
+            }
         }
 
         // ===================== تمرير ناعم =====================
@@ -877,6 +910,7 @@
         const SWIPE_CATS = ['all', 'games', 'subs'];
 
         function currentTabIndex() {
+            if (trendMode) return -1;
             const p = storeState.currentPlatform;
             if (p === 'ps4') return 3;
             if (p === 'ps5') return 4;
@@ -886,7 +920,21 @@
 
         function goToTab(i, slideX) {
             const tabs = Array.from(document.querySelectorAll('#categoryTabs .cat-btn, #categoryTabs .plat-btn'));
-            if (i < 0 || i >= tabs.length) return;
+            if (i < -1 || i >= tabs.length) return;
+            const scrollChip = btn => {
+                const c = document.getElementById('categoryTabs');
+                const br = btn.getBoundingClientRect(), cr = c.getBoundingClientRect();
+                c.scrollBy({ left: (br.left + br.width / 2) - (cr.left + cr.width / 2), behavior: 'smooth' });
+            };
+            if (i === -1) {
+                // قايمة Trend Now (قبل "كل المنتجات")
+                if (!hasTrend()) return;
+                pendingSlide = slideX;
+                enterTrend();
+                const tb = document.querySelector('#categoryTabs .trend-shortcut');
+                if (tb) scrollChip(tb);
+                return;
+            }
             pendingSlide = slideX;
             if (i < SWIPE_CATS.length) {
                 // قائمة تصنيف: نلغي فلتر المنصة وبعدين نختار التصنيف
@@ -910,9 +958,7 @@
                 filterPlatform(tabs[i].dataset.p);
             }
             // نحرك شريط الأزرار عشان الزر النشط يبان (من غير ما الصفحة تنط رأسياً)
-            const c = document.getElementById('categoryTabs');
-            const br = tabs[i].getBoundingClientRect(), cr = c.getBoundingClientRect();
-            c.scrollBy({ left: (br.left + br.width / 2) - (cr.left + cr.width / 2), behavior: 'smooth' });
+            scrollChip(tabs[i]);
         }
 
         function initSwipeNav() {
@@ -964,9 +1010,15 @@
             const sec = document.getElementById('trendSection');
             const tg = document.getElementById('trendGrid');
             const list = storeState.games.filter(g => g.trending && g.category !== 'cards');
-            const show = list.length && storeState.currentCategory === 'all' && storeState.currentPlatform === 'all' && !storeState.searchQuery;
+            if (!list.length) trendMode = false;
+            const show = trendMode;
             sec.classList.toggle('hidden', !show);
-            document.querySelectorAll('.trend-shortcut').forEach(b => b.classList.toggle('hidden', !list.length));
+            document.getElementById('gamesSection').classList.toggle('hidden', show);
+            document.querySelectorAll('.trend-shortcut').forEach(b => {
+                b.classList.toggle('hidden', !list.length);
+                b.classList.toggle('ring-2', show);
+                b.classList.toggle('ring-white', show);
+            });
             tg.innerHTML = '';
             if (show) list.forEach(g => tg.appendChild(buildCard(g)));
         }
@@ -1011,11 +1063,13 @@ grid.appendChild(buildCard(game));
             clearTimeout(smoothRenderTimer);
             // نثبت الارتفاع أثناء الانتقال عشان الصفحة ماتنطش
             grid.style.minHeight = grid.offsetHeight + 'px';
+            const trendEl = document.getElementById('trendSection');
             grid.style.opacity = '0';
+            trendEl.style.opacity = '0';
             if (exitX) grid.style.transform = `translateX(${exitX * 36}px)`;
             smoothRenderTimer = setTimeout(() => {
                 renderGames();
-                Array.from(grid.children).forEach((c, i) => {
+                Array.from(grid.children).concat(Array.from(document.getElementById('trendGrid').children)).forEach((c, i) => {
                     c.classList.add('card-enter');
                     c.style.setProperty('--d', Math.min(i, 12) * 45 + 'ms');
                 });
@@ -1028,11 +1082,13 @@ grid.appendChild(buildCard(game));
                     grid.style.transform = '';
                 }
                 grid.style.opacity = '1';
+                trendEl.style.opacity = '1';
                 setTimeout(() => { grid.style.minHeight = ''; }, 700);
             }, 170);
         }
 
         function filterCategory(cat, btn) {
+            trendMode = false;
             storeState.currentCategory = cat;
             document.querySelectorAll('.cat-btn').forEach(b => {
                 b.classList.remove('bg-aura-red', 'text-white');
@@ -1045,6 +1101,7 @@ grid.appendChild(buildCard(game));
 
         function handleSearch() {
             storeState.searchQuery = document.getElementById('searchInput').value;
+            if (storeState.searchQuery) trendMode = false;
             renderGames();
         }
 
@@ -1591,6 +1648,7 @@ grid.appendChild(buildCard(game));
             renderGames();
         }
         function filterPlatform(p) {
+            trendMode = false;
             storeState.currentPlatform = storeState.currentPlatform === p ? 'all' : p;
             document.querySelectorAll('.plat-btn').forEach(b => {
                 const on = b.dataset.p === storeState.currentPlatform;
