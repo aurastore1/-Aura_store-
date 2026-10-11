@@ -143,6 +143,9 @@
                 </button>
             </div>
         </div>
+        <div id="busyBanner" class="hidden bg-amber-500/15 border-t border-amber-500/40 text-amber-300 text-xs sm:text-sm font-bold text-center py-2 px-4">
+            <i class="fa-solid fa-hourglass-half ml-1"></i> <span id="busyBannerText"></span>
+        </div>
     </header>
 
     <main class="flex-grow max-w-7xl w-full mx-auto px-4 sm:px-6 lg:px-8 py-8">
@@ -277,6 +280,7 @@
                     </div>
                 </div>
 
+                <div id="busyCartNote" class="hidden bg-amber-500/10 border border-amber-500/40 text-amber-300 text-[11px] font-bold rounded-xl p-3 text-center"></div>
                 <button onclick="submitOrderViaWhatsApp()" class="w-full py-3.5 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white font-extrabold text-sm flex items-center justify-center gap-2 transition shadow-lg shadow-emerald-950">
                     <i class="fa-brands fa-whatsapp text-lg"></i>
                     <span id="submitOrderBtnText">إرسال الطلب عبر الواتساب</span>
@@ -309,6 +313,14 @@
             </div>
 
             <div id="adminDashboardContent" class="hidden space-y-8">
+
+                <div class="flex items-center justify-between gap-3 bg-aura-darkBg border border-aura-border rounded-xl p-3">
+                    <div>
+                        <div class="text-sm font-bold text-white">وضع "مشغول"</div>
+                        <p class="text-[11px] text-gray-400">لما يتفعل، كل زبون بيدخل الموقع بتظهرله رسالة إن الاستور مشغول وإن الأوردر هيتأخر شوية (يقدر يطلب عادي).</p>
+                    </div>
+                    <button id="busyToggleBtn" onclick="toggleBusy()" class="px-4 py-2 rounded-lg text-xs font-extrabold whitespace-nowrap bg-emerald-600 text-white transition">🟢 متاح</button>
+                </div>
 
                 <div class="flex flex-wrap gap-2 border-b border-aura-border pb-3">
                     <button onclick="switchAdminTab('addGame', this)" class="admin-tab-btn active px-4 py-2 bg-aura-red text-white text-xs font-bold rounded-lg">إضافة منتج جديد</button>
@@ -345,39 +357,28 @@
                                 <option value="ps5">PS5 فقط</option>
                             </select>
                         </div>
-                        <div id="variantsWrap" class="sm:col-span-2 grid grid-cols-2 gap-4">
-                            <div>
-                                <label class="block text-xs font-semibold text-gray-300 mb-1">سعر Primary (سيبه فاضي لو مش متاح)</label>
-                                <input type="number" id="priceP" placeholder="مثال: 1000" class="w-full bg-aura-darkBg border border-aura-border rounded-lg p-2.5 text-xs text-white">
-                            </div>
-                            <div>
-                                <label class="block text-xs font-semibold text-gray-300 mb-1">سعر Secondary (سيبه فاضي لو مش متاح)</label>
-                                <input type="number" id="priceS" placeholder="مثال: 700" class="w-full bg-aura-darkBg border border-aura-border rounded-lg p-2.5 text-xs text-white">
-                            </div>
+                        <div id="variantsWrap" class="sm:col-span-2">
+                            <label class="block text-xs font-semibold text-gray-300 mb-1">سعر اللعبة</label>
+                            <input type="number" id="priceP" placeholder="مثال: 1000" class="w-full bg-aura-darkBg border border-aura-border rounded-lg p-2.5 text-xs text-white">
                         </div>
                         <div id="variantsBothWrap" class="sm:col-span-2 space-y-3">
-                            <label class="block text-xs font-semibold text-gray-300">أسعار كل منصة (سيب الخانة فاضية لو الخيار مش متاح)</label>
-                            <div class="grid grid-cols-[auto_1fr_1fr] gap-2">
+                            <label class="block text-xs font-semibold text-gray-300">سعر اللعبة على كل منصة (سيب الخانة فاضية لو مش متاحة)</label>
+                            <div class="grid grid-cols-[auto_1fr] gap-2">
                                 <span class="text-xs font-bold text-white self-center">PS4</span>
-                                <input type="number" id="p4P" placeholder="Primary" class="w-full bg-aura-darkBg border border-aura-border rounded-lg p-2.5 text-xs text-white">
-                                <input type="number" id="p4S" placeholder="Secondary" class="w-full bg-aura-darkBg border border-aura-border rounded-lg p-2.5 text-xs text-white">
+                                <input type="number" id="p4P" placeholder="سعر PS4" class="w-full bg-aura-darkBg border border-aura-border rounded-lg p-2.5 text-xs text-white">
                                 <span class="text-xs font-bold text-white self-center">PS5</span>
-                                <input type="number" id="p5P" placeholder="Primary" class="w-full bg-aura-darkBg border border-aura-border rounded-lg p-2.5 text-xs text-white">
-                                <input type="number" id="p5S" placeholder="Secondary" class="w-full bg-aura-darkBg border border-aura-border rounded-lg p-2.5 text-xs text-white">
+                                <input type="number" id="p5P" placeholder="سعر PS5" class="w-full bg-aura-darkBg border border-aura-border rounded-lg p-2.5 text-xs text-white">
                             </div>
                         </div>
                         <div id="subsWrap" class="sm:col-span-2 hidden">
-                            <label class="block text-xs font-semibold text-gray-300 mb-2">أسعار الاشتراك (اكتب السعر في Primary أو Secondary، وسيب الخانة فاضية لو الخيار مش متاح)</label>
-                            <div class="grid grid-cols-[auto_1fr_1fr] gap-2">
+                            <label class="block text-xs font-semibold text-gray-300 mb-2">أسعار الاشتراك (سيب الخانة فاضية لو المدة دي مش متاحة)</label>
+                            <div class="grid grid-cols-[auto_1fr] gap-2">
                                 <span class="text-xs font-bold text-white self-center">شهر</span>
-                                <input type="number" id="sp1" placeholder="سعر Primary" class="w-full bg-aura-darkBg border border-aura-border rounded-lg p-2.5 text-xs text-white">
-                                <input type="number" id="ss1" placeholder="سعر Secondary" class="w-full bg-aura-darkBg border border-aura-border rounded-lg p-2.5 text-xs text-white">
+                                <input type="number" id="sp1" placeholder="السعر" class="w-full bg-aura-darkBg border border-aura-border rounded-lg p-2.5 text-xs text-white">
                                 <span class="text-xs font-bold text-white self-center">3 شهور</span>
-                                <input type="number" id="sp3" placeholder="سعر Primary" class="w-full bg-aura-darkBg border border-aura-border rounded-lg p-2.5 text-xs text-white">
-                                <input type="number" id="ss3" placeholder="سعر Secondary" class="w-full bg-aura-darkBg border border-aura-border rounded-lg p-2.5 text-xs text-white">
+                                <input type="number" id="sp3" placeholder="السعر" class="w-full bg-aura-darkBg border border-aura-border rounded-lg p-2.5 text-xs text-white">
                                 <span class="text-xs font-bold text-white self-center">سنة</span>
-                                <input type="number" id="sp12" placeholder="سعر Primary" class="w-full bg-aura-darkBg border border-aura-border rounded-lg p-2.5 text-xs text-white">
-                                <input type="number" id="ss12" placeholder="سعر Secondary" class="w-full bg-aura-darkBg border border-aura-border rounded-lg p-2.5 text-xs text-white">
+                                <input type="number" id="sp12" placeholder="السعر" class="w-full bg-aura-darkBg border border-aura-border rounded-lg p-2.5 text-xs text-white">
                             </div>
                         </div>
                         <label class="flex items-center gap-2 text-xs text-gray-300 sm:col-span-2">
@@ -469,6 +470,8 @@
                         <button onclick="forceSyncFromCloud()" class="w-full py-2 bg-aura-red text-white font-bold rounded-lg mt-2 hover:bg-aura-darkRed transition">
                             <i class="fa-solid fa-rotate ml-1"></i> تحديث البيانات الآن يدوياً
                         </button>
+                        <button id="migrateImgBtn" onclick="migrateImagesToCloud()" class="w-full py-2 bg-aura-cardBg border border-aura-red text-aura-red font-bold rounded-lg hover:bg-aura-red hover:text-white transition">نقل صور المنتجات للاستضافة</button>
+                        <p class="text-[11px] text-gray-500">بينقل الصور القديمة المتخزنة جوه قاعدة البيانات لاستضافة صور، فالموقع يخف جداً. اعمله مرة واحدة بعد ما تضبط Cloudinary.</p>
                     </div>
                 </div>
 
@@ -570,6 +573,10 @@
         // مثال: https://aura-store-12345-default-rtdb.firebaseio.com
         // ============================================================
         const DB_URL = 'https://aura-store-ara-default-rtdb.firebaseio.com';
+        // استضافة صور المنتجات (Cloudinary - مجاني). اتركهم زي ما هم لو لسه معملتش الحساب: الصور هتفضل بتتخزن زي الأول.
+        // CLOUD_NAME من الداشبورد، و UNSIGNED_PRESET من Settings ← Upload ← Add upload preset (Signing mode: Unsigned)
+        const CLOUDINARY_CLOUD_NAME = 'b8wsrebk';
+        const CLOUDINARY_UNSIGNED_PRESET = 'aura_store';
 
         // Fallback Initial Inventory
         const defaultGamesList = [
@@ -740,6 +747,7 @@
                     finishCloudProgress();
                     return;
                 }
+                setBusy(!!meta.busy); // حالة "مشغول" بتتحدث مع كل فحص، مش مرتبطة بتحميل المنتجات
                 if (force || meta.updatedAt !== storeState.lastUpdatedTimestamp) {
                     const g = (gamesPromise && await gamesPromise) || await dbGet('games');
                     if (meta.adminPassword) storeState.adminPassword = meta.adminPassword;
@@ -764,12 +772,47 @@
             }
         }
 
+        // ===================== وضع "مشغول" =====================
+        let shopBusy = false;
+        const BUSY_MSG = {
+            ar: 'العاملين بالاستور مشغولين دلوقتي، تقدر تعمل أوردر بس هيتأخر شوية 🙏',
+            en: 'Our team is busy right now. You can still place an order, but it may take a little longer.'
+        };
+        function setBusy(v) {
+            shopBusy = !!v;
+            renderBusy();
+        }
+        function renderBusy() {
+            const msg = BUSY_MSG[storeState.lang] || BUSY_MSG.ar;
+            document.getElementById('busyBanner').classList.toggle('hidden', !shopBusy);
+            document.getElementById('busyBannerText').innerText = msg;
+            const note = document.getElementById('busyCartNote');
+            note.classList.toggle('hidden', !shopBusy);
+            note.innerText = msg;
+            const b = document.getElementById('busyToggleBtn');
+            if (b) {
+                b.innerText = shopBusy ? '🔴 مشغول (اضغط لإلغائه)' : '🟢 متاح';
+                b.classList.toggle('bg-red-600', shopBusy);
+                b.classList.toggle('bg-emerald-600', !shopBusy);
+            }
+        }
+        async function toggleBusy() {
+            const next = !shopBusy;
+            try {
+                await dbPut('meta/busy', next);
+                setBusy(next);
+                showToast(next ? 'تم تفعيل وضع مشغول، الزباين هيشوفوا الرسالة' : 'رجعت متاح، الرسالة اختفت');
+            } catch (e) {
+                showToast('فشل تغيير الحالة!');
+            }
+        }
+
         // بيحفظ المنتجات + كلمة السر في السحابة
         async function syncCloudAndSave() {
             const ts = Date.now();
             try {
                 await dbPut('games', storeState.games);
-                await dbPut('meta', { updatedAt: ts, adminPassword: storeState.adminPassword });
+                await dbPut('meta', { updatedAt: ts, adminPassword: storeState.adminPassword, busy: shopBusy });
                 storeState.lastUpdatedTimestamp = ts;
                 saveLocalState();
                 updateCloudBadge(true);
@@ -849,6 +892,7 @@
             document.getElementById('catalogTitle').innerHTML = `<i class="fa-solid fa-fire text-aura-red"></i> ${t.catalogTitle}`;
             document.getElementById('cartTitle').innerText = t.cartTitle;
             document.getElementById('cartTotalLabel').innerText = t.cartTotal;
+            renderBusy();
             document.getElementById('lblCustomerName').innerText = t.custNameLbl;
             document.getElementById('lblCustomerPhone').innerText = t.custPhoneLbl;
             document.getElementById('lblPaymentMethod').innerText = t.paymentMethodLbl;
@@ -863,7 +907,7 @@
             card.innerHTML = `
                 <div class="relative aspect-square bg-black overflow-hidden">
                     ${hasDisc(game) ? `<span class="absolute top-3 right-3 z-10 px-2 py-1 bg-emerald-500 text-black text-[10px] font-black rounded-lg">-${discPct(game)}%</span>` : ''}
-                    <img src="${game.image}" alt="${game.title}" class="w-full h-full object-cover object-center group-hover:scale-105 transition duration-500" loading="lazy" decoding="async">
+                    <img src="${imgUrl(game.image, 600)}" alt="${esc(game.title)}" class="w-full h-full object-cover object-center group-hover:scale-105 transition duration-500" loading="lazy" decoding="async">
                     <span class="absolute top-3 left-3 px-2.5 py-1 bg-black/80 backdrop-blur-md border border-aura-border text-[10px] font-bold uppercase tracking-wider text-aura-red rounded-lg">
                         ${catLabel(game)}
                     </span>
@@ -1184,7 +1228,7 @@ grid.appendChild(buildCard(game));
             if (existing) {
                 existing.qty++;
             } else {
-                storeState.cart.push({ ...game, cartKey: key, price: priceOf(game), variantLabel: v ? (v.group ? v.group + ' - ' : '') + v.label : '', qty: 1 });
+                storeState.cart.push({ ...game, cartKey: key, price: priceOf(game), variantLabel: v ? (game.category === 'games' ? (v.group || '') : v.label) : '', qty: 1 });
             }
 
             updateCartUI();
@@ -1207,7 +1251,7 @@ grid.appendChild(buildCard(game));
                 row.className = "flex items-center justify-between bg-aura-darkBg p-3 rounded-xl border border-aura-border";
                 row.innerHTML = `
                     <div class="flex items-center gap-3">
-                        <img src="${item.image}" class="w-12 h-12 rounded-lg object-cover">
+                        <img src="${imgUrl(item.image, 120)}" class="w-12 h-12 rounded-lg object-cover">
                         <div>
                             <h5 class="text-xs font-bold text-white line-clamp-1">${esc(item.title)}${item.variantLabel ? ' - ' + esc(item.variantLabel) : ''}</h5>
                             <span class="text-xs font-bold text-aura-red">EGP ${item.price}</span>
@@ -1344,7 +1388,7 @@ grid.appendChild(buildCard(game));
                 const row = document.createElement('div');
                 row.className = 'flex items-center gap-3 bg-aura-darkBg p-3 rounded-xl border border-aura-border';
                 row.innerHTML = `
-                    <img src="${esc(item.image)}" class="w-16 h-16 rounded-lg object-cover bg-black flex-shrink-0">
+                    <img src="${esc(imgUrl(item.image, 150))}" class="w-16 h-16 rounded-lg object-cover bg-black flex-shrink-0">
                     <div class="flex-grow min-w-0">
                         <h5 class="text-xs font-bold text-white line-clamp-2">${esc(item.title)}</h5>
                         ${item.variantLabel ? `<span class="inline-block mt-1 px-2 py-0.5 rounded bg-aura-red/20 border border-aura-red/50 text-aura-red text-[10px] font-bold">${esc(item.variantLabel)}</span>` : ''}
@@ -1479,18 +1523,78 @@ grid.appendChild(buildCard(game));
             btn.classList.add('bg-aura-red', 'text-white');
         }
 
+        // ===================== استضافة الصور (Cloudinary) =====================
+        function cloudImagesEnabled() {
+            return !CLOUDINARY_CLOUD_NAME.startsWith('PUT_') && !CLOUDINARY_UNSIGNED_PRESET.startsWith('PUT_');
+        }
+        // بيرفع صورة (ملف أو data URL) ويرجّع رابطها
+        async function uploadImageToCloud(file) {
+            const fd = new FormData();
+            fd.append('file', file);
+            fd.append('upload_preset', CLOUDINARY_UNSIGNED_PRESET);
+            const r = await fetch(`https://api.cloudinary.com/v1_1/${CLOUDINARY_CLOUD_NAME}/image/upload`, { method: 'POST', body: fd });
+            if (!r.ok) throw new Error('upload ' + r.status);
+            return (await r.json()).secure_url;
+        }
+        // بيطلب من Cloudinary نسخة صغيرة ومضغوطة بصيغة أنسب للجهاز، فالتحميل أسرع بكتير
+        function imgUrl(src, w) {
+            if (typeof src === 'string' && src.includes('res.cloudinary.com') && src.includes('/upload/') && !src.includes('/upload/f_auto')) {
+                return src.replace('/upload/', `/upload/f_auto,q_auto,c_limit,w_${w}/`);
+            }
+            return src;
+        }
+
+        let imgUploading = false;
         function handleGameImageUpload(event) {
             const file = event.target.files[0];
             if (!file) return;
+            const ar = storeState.lang === 'ar';
 
-            compressAndResizeImage(file, 900, 0.85, (compressedImg) => {
-                storeState.uploadedNewGameImgBase64 = compressedImg;
+            compressAndResizeImage(file, 1000, 0.85, async (compressedImg) => {
+                // معاينة فورية بالصورة المحلية
                 document.getElementById('gameImgPreview').src = compressedImg;
                 document.getElementById('gameImgPreviewContainer').classList.remove('hidden');
+                if (!cloudImagesEnabled()) {
+                    storeState.uploadedNewGameImgBase64 = compressedImg;
+                    return;
+                }
+                imgUploading = true;
+                showToast(ar ? 'جاري رفع الصورة...' : 'Uploading image...');
+                try {
+                    storeState.uploadedNewGameImgBase64 = await uploadImageToCloud(compressedImg);
+                    showToast(ar ? 'تم رفع الصورة ✅' : 'Image uploaded ✅');
+                } catch (e) {
+                    console.warn('Image upload failed, keeping inline copy:', e);
+                    storeState.uploadedNewGameImgBase64 = compressedImg; // احتياطي: الصورة تتخزن داخل القاعدة زي الأول
+                    showToast(ar ? 'فشل رفع الصورة للاستضافة، هتتحفظ بالطريقة القديمة' : 'Upload failed, saving inline');
+                } finally {
+                    imgUploading = false;
+                }
             });
         }
 
+        // بينقل صور المنتجات القديمة (اللي متخزنة جوه القاعدة) للاستضافة مرة واحدة
+        async function migrateImagesToCloud() {
+            const ar = storeState.lang === 'ar';
+            if (!cloudImagesEnabled()) { showToast(ar ? 'لازم تحط CLOUDINARY_CLOUD_NAME و PRESET في الكود الأول' : 'Set Cloudinary settings first'); return; }
+            const todo = storeState.games.filter(g => typeof g.image === 'string' && g.image.startsWith('data:'));
+            if (!todo.length) { showToast(ar ? 'كل الصور على الاستضافة بالفعل ✅' : 'All images already hosted ✅'); return; }
+            const btn = document.getElementById('migrateImgBtn');
+            btn.disabled = true;
+            let done = 0, failed = 0;
+            for (const g of todo) {
+                btn.innerText = `جاري النقل... ${done + failed + 1} / ${todo.length}`;
+                try { g.image = await uploadImageToCloud(g.image); done++; }
+                catch (e) { failed++; console.warn('Migrate failed for', g.title, e); }
+            }
+            if (done) { renderGames(); renderAdminGamesTable(); await syncCloudAndSave(); }
+            btn.disabled = false;
+            btn.innerText = 'نقل صور المنتجات للاستضافة';
+            showToast(`تم نقل ${done} صورة${failed ? ` وفشل ${failed}` : ''}`);
+        }
+
         async function createNewGameSubmit() {
+            if (imgUploading) { showToast(storeState.lang === 'ar' ? 'استنى الصورة تخلص رفع...' : 'Wait for the image upload...'); return; }
             const title = document.getElementById('newGameTitle').value.trim();
             const cat = document.getElementById('newGameCat').value;
             const price = parseFloat(document.getElementById('newGamePrice').value);
@@ -1502,21 +1606,15 @@ grid.appendChild(buildCard(game));
             if (cat === 'games' && platform === 'both') {
                 [['ps4', 'PS4', 'p4'], ['ps5', 'PS5', 'p5']].forEach(([k, group, pre]) => {
                     const a = parseFloat(document.getElementById(pre + 'P').value);
-                    const b = parseFloat(document.getElementById(pre + 'S').value);
                     if (!isNaN(a)) variants.push({ key: k + '_primary', group: group, label: 'Primary', price: a, ...oldOf(pre + 'P', a) });
-                    if (!isNaN(b)) variants.push({ key: k + '_secondary', group: group, label: 'Secondary', price: b, ...oldOf(pre + 'S', b) });
                 });
             } else if (cat === 'games') {
                 const p1 = parseFloat(document.getElementById('priceP').value);
-                const p2 = parseFloat(document.getElementById('priceS').value);
                 if (!isNaN(p1)) variants.push({ key: 'primary', label: 'Primary', price: p1, ...oldOf('priceP', p1) });
-                if (!isNaN(p2)) variants.push({ key: 'secondary', label: 'Secondary', price: p2, ...oldOf('priceS', p2) });
             } else if (cat === 'subs') {
                 [['1', 'شهر'], ['3', '3 شهور'], ['12', 'سنة']].forEach(([d, label]) => {
-                    [['sp', 'Primary', 'p'], ['ss', 'Secondary', 's']].forEach(([pre, group, k]) => {
-                        const pr = parseFloat(document.getElementById(pre + d).value);
-                        if (!isNaN(pr)) variants.push({ key: k + d, group: group, label: label, price: pr, ...oldOf(pre + d, pr) });
-                    });
+                    const pr = parseFloat(document.getElementById('sp' + d).value);
+                    if (!isNaN(pr)) variants.push({ key: 'p' + d, label: label, price: pr, ...oldOf('sp' + d, pr) });
                 });
             }
 
@@ -1567,7 +1665,7 @@ grid.appendChild(buildCard(game));
                 tr.className = "hover:bg-aura-darkBg/50";
                 tr.innerHTML = `
                     <td class="p-3 flex items-center gap-2">
-                        <img src="${game.image}" class="w-8 h-8 rounded object-cover">
+                        <img src="${imgUrl(game.image, 80)}" class="w-8 h-8 rounded object-cover">
                         <span class="font-bold text-white line-clamp-1">${game.title}</span>
                     </td>
                     <td class="p-3 uppercase text-[10px] text-aura-red font-bold">${game.category}</td>
@@ -1709,19 +1807,31 @@ grid.appendChild(buildCard(game));
             if (g.inStock === false) t += ' • نفذت';
             return t;
         }
+        // الألعاب والاشتراكات بتستخدم سعر الـ Primary بس (Secondary القديمة بتتجاهل) ومبيتكتبش "Primary" في أي مكان
+        function activeVariants(g) {
+            const vs = g.variants || [];
+            if (g.category === 'games') {
+                const prim = vs.filter(v => v.label === 'Primary');
+                return prim.length ? prim : vs;
+            }
+            // الاشتراكات: بنتجاهل Secondary القديمة، ومبنعرضش كلمة Primary
+            const prim = vs.filter(v => v.group !== 'Secondary');
+            return prim.length ? prim : vs;
+        }
         function getVariant(g) {
-            if (!g.variants || !g.variants.length) return null;
+            const vs = activeVariants(g);
+            if (!vs.length) return null;
             const k = storeState.selectedVariants[g.id];
-            const sel = g.variants.find(v => v.key === k);
+            const sel = vs.find(v => v.key === k);
             if (sel) return sel;
             const p = storeState.currentPlatform;
             if (p !== 'all') {
-                const byPlat = g.variants.find(v => v.group === p.toUpperCase());
+                const byPlat = vs.find(v => v.group === p.toUpperCase());
                 if (byPlat) return byPlat;
             }
-            return g.variants[0];
+            return vs[0];
         }
-        const PRICE_IDS = ['priceP', 'priceS', 'p4P', 'p4S', 'p5P', 'p5S', 'sp1', 'ss1', 'sp3', 'ss3', 'sp12', 'ss12'];
+        const PRICE_IDS = ['priceP', 'p4P', 'p5P', 'sp1', 'sp3', 'sp12'];
         function oldOf(id, price) {
             const o = parseFloat(document.getElementById(id + '_old').value);
             return o > price ? { oldPrice: o } : {};
@@ -1773,23 +1883,26 @@ grid.appendChild(buildCard(game));
             return Math.round((1 - priceOf(g) / origPriceOf(g)) * 100);
         }
         function variantChips(g) {
-            if (!g.variants || !g.variants.length) return '';
+            const vs = activeVariants(g);
+            if (!vs.length) return '';
             const cur = getVariant(g);
-            const groups = [...new Set(g.variants.map(v => v.group).filter(Boolean))];
+            const isGame = g.category === 'games';
+            const groups = [...new Set(vs.map(v => v.group).filter(Boolean))];
             const chip = (on, click, text) => `<button onclick="${click}" class="px-2 py-1 rounded-lg text-[10px] font-bold border transition ${on ? 'bg-aura-red border-aura-red text-white' : 'bg-aura-darkBg border-aura-border text-gray-300'}">${esc(text)}</button>`;
-            let html = '<div class="flex flex-wrap gap-1.5 mt-2">';
-            if (groups.length) {
-                html += groups.map(gr => chip(gr === cur.group, `selectGroup('${g.id}','${esc(gr)}')`, gr)).join('');
-                html += '</div><div class="flex flex-wrap gap-1.5 mt-1.5">';
+            let html = '';
+            if (isGame && groups.length > 1) {
+                html += '<div class="flex flex-wrap gap-1.5 mt-2">' + groups.map(gr => chip(gr === cur.group, `selectGroup('${g.id}','${esc(gr)}')`, gr)).join('') + '</div>';
             }
-            html += g.variants.filter(v => !groups.length || v.group === cur.group).map(v => chip(v.key === cur.key, `selectVariant('${g.id}','${v.key}')`, v.label)).join('') + '</div>';
+            if (!isGame) {
+                html += '<div class="flex flex-wrap gap-1.5 mt-1.5">' + vs.map(v => chip(v.key === cur.key, `selectVariant('${g.id}','${v.key}')`, v.label)).join('') + '</div>';
+            }
             return html;
         }
         function selectGroup(id, gr) {
             const g = storeState.games.find(x => x.id === id);
             if (!g) return;
             const cur = getVariant(g);
-            const v = g.variants.find(x => x.group === gr && x.label === cur.label) || g.variants.find(x => x.group === gr);
+            const v = activeVariants(g).find(x => x.group === gr && x.label === cur.label) || activeVariants(g).find(x => x.group === gr);
             if (v) storeState.selectedVariants[id] = v.key;
             renderGames();
         }
@@ -1810,7 +1923,7 @@ grid.appendChild(buildCard(game));
             renderGamesSmooth();
         }
         function priceCell(g) {
-            if (g.variants && g.variants.length) return g.variants.map(v => `${v.group ? esc(v.group) + ' ' : ''}${esc(v.label)}: ${v.price}${v.oldPrice > v.price ? ` <span class="text-gray-500 line-through">${v.oldPrice}</span>` : ''}`).join('<br>') + (discOf(g) ? `<br><span class="text-emerald-400 font-bold">خصم ${discOf(g)}% (قديم)</span>` : '');
+            if (g.variants && g.variants.length) return activeVariants(g).map(v => `${g.category === 'games' ? esc(v.group || 'السعر') : esc(v.label)}: ${v.price}${v.oldPrice > v.price ? ` <span class="text-gray-500 line-through">${v.oldPrice}</span>` : ''}`).join('<br>') + (discOf(g) ? `<br><span class="text-emerald-400 font-bold">خصم ${discOf(g)}% (قديم)</span>` : '');
             return `<input type="number" value="${g.price}" onchange="updateGamePrice('${g.id}', this.value)" class="w-20 bg-aura-darkBg border border-aura-border rounded p-1 text-xs text-yellow-400 font-bold">`;
         }
         function onCatChange() {
@@ -1841,12 +1954,12 @@ grid.appendChild(buildCard(game));
                 document.getElementById(id).value = (manual || !d) ? v.price : Math.round(v.price * (1 - d / 100));
                 document.getElementById(id + '_old').value = manual ? v.oldPrice : (d ? v.price : '');
             };
-            const vm = { primary: 'priceP', secondary: 'priceS', ps4_primary: 'p4P', ps4_secondary: 'p4S', ps5_primary: 'p5P', ps5_secondary: 'p5S' };
+            const vm = { primary: 'priceP', ps4_primary: 'p4P', ps5_primary: 'p5P' };
             const lbl = { '1': 'شهر', '3': '3 شهور', '12': 'سنة' };
             (g.variants || []).forEach(v => {
                 if (g.category === 'subs') {
                     const d = Object.keys(lbl).find(k => lbl[k] === v.label);
-                    if (d) setP((v.group === 'Secondary' ? 'ss' : 'sp') + d, v);
+                    if (d && v.group !== 'Secondary') setP('sp' + d, v);
                 } else if (vm[v.key]) {
                     setP(vm[v.key], v);
                 }
