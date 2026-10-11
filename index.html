@@ -357,28 +357,39 @@
                                 <option value="ps5">PS5 فقط</option>
                             </select>
                         </div>
-                        <div id="variantsWrap" class="sm:col-span-2">
-                            <label class="block text-xs font-semibold text-gray-300 mb-1">سعر اللعبة</label>
-                            <input type="number" id="priceP" placeholder="مثال: 1000" class="w-full bg-aura-darkBg border border-aura-border rounded-lg p-2.5 text-xs text-white">
+                        <div id="variantsWrap" class="sm:col-span-2 grid grid-cols-2 gap-4">
+                            <div>
+                                <label class="block text-xs font-semibold text-gray-300 mb-1">سعر Primary (سيبه فاضي لو مش متاح)</label>
+                                <input type="number" id="priceP" placeholder="مثال: 1000" class="w-full bg-aura-darkBg border border-aura-border rounded-lg p-2.5 text-xs text-white">
+                            </div>
+                            <div>
+                                <label class="block text-xs font-semibold text-gray-300 mb-1">سعر Secondary (سيبه فاضي لو مش متاح)</label>
+                                <input type="number" id="priceS" placeholder="مثال: 700" class="w-full bg-aura-darkBg border border-aura-border rounded-lg p-2.5 text-xs text-white">
+                            </div>
                         </div>
                         <div id="variantsBothWrap" class="sm:col-span-2 space-y-3">
-                            <label class="block text-xs font-semibold text-gray-300">سعر اللعبة على كل منصة (سيب الخانة فاضية لو مش متاحة)</label>
-                            <div class="grid grid-cols-[auto_1fr] gap-2">
+                            <label class="block text-xs font-semibold text-gray-300">أسعار كل منصة (سيب الخانة فاضية لو الخيار مش متاح)</label>
+                            <div class="grid grid-cols-[auto_1fr_1fr] gap-2">
                                 <span class="text-xs font-bold text-white self-center">PS4</span>
-                                <input type="number" id="p4P" placeholder="سعر PS4" class="w-full bg-aura-darkBg border border-aura-border rounded-lg p-2.5 text-xs text-white">
+                                <input type="number" id="p4P" placeholder="Primary" class="w-full bg-aura-darkBg border border-aura-border rounded-lg p-2.5 text-xs text-white">
+                                <input type="number" id="p4S" placeholder="Secondary" class="w-full bg-aura-darkBg border border-aura-border rounded-lg p-2.5 text-xs text-white">
                                 <span class="text-xs font-bold text-white self-center">PS5</span>
-                                <input type="number" id="p5P" placeholder="سعر PS5" class="w-full bg-aura-darkBg border border-aura-border rounded-lg p-2.5 text-xs text-white">
+                                <input type="number" id="p5P" placeholder="Primary" class="w-full bg-aura-darkBg border border-aura-border rounded-lg p-2.5 text-xs text-white">
+                                <input type="number" id="p5S" placeholder="Secondary" class="w-full bg-aura-darkBg border border-aura-border rounded-lg p-2.5 text-xs text-white">
                             </div>
                         </div>
                         <div id="subsWrap" class="sm:col-span-2 hidden">
-                            <label class="block text-xs font-semibold text-gray-300 mb-2">أسعار الاشتراك (سيب الخانة فاضية لو المدة دي مش متاحة)</label>
-                            <div class="grid grid-cols-[auto_1fr] gap-2">
+                            <label class="block text-xs font-semibold text-gray-300 mb-2">أسعار الاشتراك (اكتب السعر في Primary أو Secondary، وسيب الخانة فاضية لو الخيار مش متاح)</label>
+                            <div class="grid grid-cols-[auto_1fr_1fr] gap-2">
                                 <span class="text-xs font-bold text-white self-center">شهر</span>
-                                <input type="number" id="sp1" placeholder="السعر" class="w-full bg-aura-darkBg border border-aura-border rounded-lg p-2.5 text-xs text-white">
+                                <input type="number" id="sp1" placeholder="سعر Primary" class="w-full bg-aura-darkBg border border-aura-border rounded-lg p-2.5 text-xs text-white">
+                                <input type="number" id="ss1" placeholder="سعر Secondary" class="w-full bg-aura-darkBg border border-aura-border rounded-lg p-2.5 text-xs text-white">
                                 <span class="text-xs font-bold text-white self-center">3 شهور</span>
-                                <input type="number" id="sp3" placeholder="السعر" class="w-full bg-aura-darkBg border border-aura-border rounded-lg p-2.5 text-xs text-white">
+                                <input type="number" id="sp3" placeholder="سعر Primary" class="w-full bg-aura-darkBg border border-aura-border rounded-lg p-2.5 text-xs text-white">
+                                <input type="number" id="ss3" placeholder="سعر Secondary" class="w-full bg-aura-darkBg border border-aura-border rounded-lg p-2.5 text-xs text-white">
                                 <span class="text-xs font-bold text-white self-center">سنة</span>
-                                <input type="number" id="sp12" placeholder="السعر" class="w-full bg-aura-darkBg border border-aura-border rounded-lg p-2.5 text-xs text-white">
+                                <input type="number" id="sp12" placeholder="سعر Primary" class="w-full bg-aura-darkBg border border-aura-border rounded-lg p-2.5 text-xs text-white">
+                                <input type="number" id="ss12" placeholder="سعر Secondary" class="w-full bg-aura-darkBg border border-aura-border rounded-lg p-2.5 text-xs text-white">
                             </div>
                         </div>
                         <label class="flex items-center gap-2 text-xs text-gray-300 sm:col-span-2">
@@ -1228,7 +1239,7 @@ grid.appendChild(buildCard(game));
             if (existing) {
                 existing.qty++;
             } else {
-                storeState.cart.push({ ...game, cartKey: key, price: priceOf(game), variantLabel: v ? (game.category === 'games' ? (v.group || '') : v.label) : '', qty: 1 });
+                storeState.cart.push({ ...game, cartKey: key, price: priceOf(game), variantLabel: v ? (v.group ? v.group + ' - ' : '') + v.label : '', qty: 1 });
             }
 
             updateCartUI();
@@ -1606,15 +1617,21 @@ grid.appendChild(buildCard(game));
             if (cat === 'games' && platform === 'both') {
                 [['ps4', 'PS4', 'p4'], ['ps5', 'PS5', 'p5']].forEach(([k, group, pre]) => {
                     const a = parseFloat(document.getElementById(pre + 'P').value);
+                    const b = parseFloat(document.getElementById(pre + 'S').value);
                     if (!isNaN(a)) variants.push({ key: k + '_primary', group: group, label: 'Primary', price: a, ...oldOf(pre + 'P', a) });
+                    if (!isNaN(b)) variants.push({ key: k + '_secondary', group: group, label: 'Secondary', price: b, ...oldOf(pre + 'S', b) });
                 });
             } else if (cat === 'games') {
                 const p1 = parseFloat(document.getElementById('priceP').value);
+                const p2 = parseFloat(document.getElementById('priceS').value);
                 if (!isNaN(p1)) variants.push({ key: 'primary', label: 'Primary', price: p1, ...oldOf('priceP', p1) });
+                if (!isNaN(p2)) variants.push({ key: 'secondary', label: 'Secondary', price: p2, ...oldOf('priceS', p2) });
             } else if (cat === 'subs') {
                 [['1', 'شهر'], ['3', '3 شهور'], ['12', 'سنة']].forEach(([d, label]) => {
-                    const pr = parseFloat(document.getElementById('sp' + d).value);
-                    if (!isNaN(pr)) variants.push({ key: 'p' + d, label: label, price: pr, ...oldOf('sp' + d, pr) });
+                    [['sp', 'Primary', 'p'], ['ss', 'Secondary', 's']].forEach(([pre, group, k]) => {
+                        const pr = parseFloat(document.getElementById(pre + d).value);
+                        if (!isNaN(pr)) variants.push({ key: k + d, group: group, label: label, price: pr, ...oldOf(pre + d, pr) });
+                    });
                 });
             }
 
@@ -1807,16 +1824,9 @@ grid.appendChild(buildCard(game));
             if (g.inStock === false) t += ' • نفذت';
             return t;
         }
-        // الألعاب والاشتراكات بتستخدم سعر الـ Primary بس (Secondary القديمة بتتجاهل) ومبيتكتبش "Primary" في أي مكان
+        // الألعاب والاشتراكات ليها Primary و Secondary (لو السعرين متسجلين)
         function activeVariants(g) {
-            const vs = g.variants || [];
-            if (g.category === 'games') {
-                const prim = vs.filter(v => v.label === 'Primary');
-                return prim.length ? prim : vs;
-            }
-            // الاشتراكات: بنتجاهل Secondary القديمة، ومبنعرضش كلمة Primary
-            const prim = vs.filter(v => v.group !== 'Secondary');
-            return prim.length ? prim : vs;
+            return g.variants || [];
         }
         function getVariant(g) {
             const vs = activeVariants(g);
@@ -1831,7 +1841,7 @@ grid.appendChild(buildCard(game));
             }
             return vs[0];
         }
-        const PRICE_IDS = ['priceP', 'p4P', 'p5P', 'sp1', 'sp3', 'sp12'];
+        const PRICE_IDS = ['priceP', 'priceS', 'p4P', 'p4S', 'p5P', 'p5S', 'sp1', 'ss1', 'sp3', 'ss3', 'sp12', 'ss12'];
         function oldOf(id, price) {
             const o = parseFloat(document.getElementById(id + '_old').value);
             return o > price ? { oldPrice: o } : {};
@@ -1883,19 +1893,16 @@ grid.appendChild(buildCard(game));
             return Math.round((1 - priceOf(g) / origPriceOf(g)) * 100);
         }
         function variantChips(g) {
-            const vs = activeVariants(g);
-            if (!vs.length) return '';
+            if (!g.variants || !g.variants.length) return '';
             const cur = getVariant(g);
-            const isGame = g.category === 'games';
-            const groups = [...new Set(vs.map(v => v.group).filter(Boolean))];
+            const groups = [...new Set(g.variants.map(v => v.group).filter(Boolean))];
             const chip = (on, click, text) => `<button onclick="${click}" class="px-2 py-1 rounded-lg text-[10px] font-bold border transition ${on ? 'bg-aura-red border-aura-red text-white' : 'bg-aura-darkBg border-aura-border text-gray-300'}">${esc(text)}</button>`;
-            let html = '';
-            if (isGame && groups.length > 1) {
-                html += '<div class="flex flex-wrap gap-1.5 mt-2">' + groups.map(gr => chip(gr === cur.group, `selectGroup('${g.id}','${esc(gr)}')`, gr)).join('') + '</div>';
+            let html = '<div class="flex flex-wrap gap-1.5 mt-2">';
+            if (groups.length) {
+                html += groups.map(gr => chip(gr === cur.group, `selectGroup('${g.id}','${esc(gr)}')`, gr)).join('');
+                html += '</div><div class="flex flex-wrap gap-1.5 mt-1.5">';
             }
-            if (!isGame) {
-                html += '<div class="flex flex-wrap gap-1.5 mt-1.5">' + vs.map(v => chip(v.key === cur.key, `selectVariant('${g.id}','${v.key}')`, v.label)).join('') + '</div>';
-            }
+            html += g.variants.filter(v => !groups.length || v.group === cur.group).map(v => chip(v.key === cur.key, `selectVariant('${g.id}','${v.key}')`, v.label)).join('') + '</div>';
             return html;
         }
         function selectGroup(id, gr) {
@@ -1923,7 +1930,7 @@ grid.appendChild(buildCard(game));
             renderGamesSmooth();
         }
         function priceCell(g) {
-            if (g.variants && g.variants.length) return activeVariants(g).map(v => `${g.category === 'games' ? esc(v.group || 'السعر') : esc(v.label)}: ${v.price}${v.oldPrice > v.price ? ` <span class="text-gray-500 line-through">${v.oldPrice}</span>` : ''}`).join('<br>') + (discOf(g) ? `<br><span class="text-emerald-400 font-bold">خصم ${discOf(g)}% (قديم)</span>` : '');
+            if (g.variants && g.variants.length) return activeVariants(g).map(v => `${esc((v.group ? v.group + ' ' : '') + v.label)}: ${v.price}${v.oldPrice > v.price ? ` <span class="text-gray-500 line-through">${v.oldPrice}</span>` : ''}`).join('<br>') + (discOf(g) ? `<br><span class="text-emerald-400 font-bold">خصم ${discOf(g)}% (قديم)</span>` : '');
             return `<input type="number" value="${g.price}" onchange="updateGamePrice('${g.id}', this.value)" class="w-20 bg-aura-darkBg border border-aura-border rounded p-1 text-xs text-yellow-400 font-bold">`;
         }
         function onCatChange() {
@@ -1954,12 +1961,12 @@ grid.appendChild(buildCard(game));
                 document.getElementById(id).value = (manual || !d) ? v.price : Math.round(v.price * (1 - d / 100));
                 document.getElementById(id + '_old').value = manual ? v.oldPrice : (d ? v.price : '');
             };
-            const vm = { primary: 'priceP', ps4_primary: 'p4P', ps5_primary: 'p5P' };
+            const vm = { primary: 'priceP', secondary: 'priceS', ps4_primary: 'p4P', ps4_secondary: 'p4S', ps5_primary: 'p5P', ps5_secondary: 'p5S' };
             const lbl = { '1': 'شهر', '3': '3 شهور', '12': 'سنة' };
             (g.variants || []).forEach(v => {
                 if (g.category === 'subs') {
                     const d = Object.keys(lbl).find(k => lbl[k] === v.label);
-                    if (d && v.group !== 'Secondary') setP('sp' + d, v);
+                    if (d) setP((v.group === 'Secondary' ? 'ss' : 'sp') + d, v);
                 } else if (vm[v.key]) {
                     setP(vm[v.key], v);
                 }
